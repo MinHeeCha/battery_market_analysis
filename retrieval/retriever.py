@@ -1,7 +1,8 @@
 """
 Unified Retriever - combines vector search and web search using BGE-M3
 """
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
+import numpy as np
 from shared.logger import get_logger
 from retrieval.embedder import BGEEmbedder
 from config.settings import config
@@ -77,7 +78,6 @@ class Retriever:
             doc_embeddings = self.embedder.encode(doc_texts)
             
             # Calculate similarity scores (cosine similarity)
-            import numpy as np
             scores = np.dot(doc_embeddings, query_embedding[0].T)
             
             # Get top-k results
@@ -129,22 +129,3 @@ class Retriever:
         if self.embedder:
             return self.embedder.get_model_info()
         return {"model_loaded": False, "error": "Embedder not initialized"}
-            }
-        ]
-        
-        # In real implementation, this would:
-        # 1. Embed the query
-        # 2. Search vector store
-        # 3. Optionally perform web search
-        # 4. Combine and rank results
-        
-        return results[:top_k]
-    
-    def search_by_keyword(self, keyword: str, top_k: int = 5) -> List[Dict[str, Any]]:
-        """Keyword-based search"""
-        return self.search(keyword, top_k)
-    
-    def clear(self) -> None:
-        """Clear all documents"""
-        self.docs = []
-        self.logger.info("Retriever cleared")
