@@ -21,7 +21,7 @@ class ProjectState(BaseModel):
     lg_strategy: Optional[str] = Field(None, description="LG Energy strategy analysis (~1 page)")
     catl_strategy: Optional[str] = Field(None, description="CATL strategy analysis (~1 page)")
     comparative_swot: Optional[str] = Field(None, description="Comparative SWOT analysis (~2 pages)")
-    final_report: Optional[str] = Field(None, description="Final compiled report content")
+    final_report: Optional[Any] = Field(None, description="Final compiled report content (dict from ReportOutput or str)")
     
     # Metadata
     retry_count: Dict[str, int] = Field(default_factory=dict, description="Retry count per agent")
