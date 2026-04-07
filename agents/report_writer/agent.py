@@ -78,7 +78,7 @@ class ReportWriterAgent(BaseAgent):
         )
         
         return {
-            "result": report_output.model_dump(),  # Convert to dict for JSON serialization
+            "result": report_output.dict(),  # Convert to dict for JSON serialization
             "agent": "report_writer",
             "status": "completed",
             "format": "json"

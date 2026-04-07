@@ -46,4 +46,4 @@ class ProjectState(BaseModel):
     
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary"""
-        return self.model_dump(exclude_none=False)
+        return self.dict(exclude_none=False)
