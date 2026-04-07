@@ -4,3 +4,10 @@ __pycache__/
 *.pyc
 .ipynb_checkpoints/
 .DS_Store
+raw/
+*.env
+*.log
+
+# Vector DB artifacts (keep only placeholder files)
+tests/data/vector_store/**
+!tests/data/vector_store/.gitkeep
