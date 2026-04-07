@@ -63,20 +63,39 @@ class SWOTValidator(BaseValidator):
     """Validates SWOT analysis agent output"""
     
     def validate(self, content: Any) -> Tuple[bool, str]:
-        """Validate SWOT analysis content"""
-        if isinstance(content, dict):
-            text = str(content.get("result", ""))
-        else:
-            text = str(content)
-        
-        # Additional SWOT-specific checks
-        swot_keywords = ["강점", "약점", "기회", "위협"]
-        has_keywords = sum(1 for kw in swot_keywords if kw in text)
-        
+        """Validate structured SWOT analysis content"""
+        result = content.get("result") if isinstance(content, dict) else content
+        if not isinstance(result, dict):
+            return False, "SWOT result must be a dict with lg_swot/catl_swot/comparative_swot"
+
+        lg_swot = result.get("lg_swot")
+        catl_swot = result.get("catl_swot")
+        comparative_swot = result.get("comparative_swot", "")
+
+        required_fields = ["strengths", "weaknesses", "opportunities", "threats"]
+
+        def check_company_swot(name: str, swot: Any) -> Tuple[bool, str]:
+            if not isinstance(swot, dict):
+                return False, f"{name} SWOT must be dict"
+            missing = [f for f in required_fields if f not in swot]
+            if missing:
+                return False, f"{name} missing fields: {', '.join(missing)}"
+            empty = [f for f in required_fields if not isinstance(swot.get(f), list) or len(swot.get(f, [])) == 0]
+            if empty:
+                return False, f"{name} empty quadrants: {', '.join(empty)}"
+            return True, f"{name} structure OK"
+
+        lg_ok, lg_msg = check_company_swot("LG", lg_swot)
+        catl_ok, catl_msg = check_company_swot("CATL", catl_swot)
+        comp_ok = bool(str(comparative_swot).strip())
+
+        combined_text = f"{lg_swot}\n{catl_swot}\n{comparative_swot}"
         validators = [
-            lambda: self.check_text_length(text),
-            lambda: self.check_minimum_sentences(text),
-            lambda: (has_keywords >= 4, f"SWOT keywords found: {has_keywords}/4" if has_keywords == 4 else f"Missing SWOT keywords: {4-has_keywords}")
+            lambda: (lg_ok, lg_msg),
+            lambda: (catl_ok, catl_msg),
+            lambda: (comp_ok, "comparative_swot exists" if comp_ok else "comparative_swot is empty"),
+            lambda: self.check_text_length(combined_text),
+            lambda: self.check_minimum_sentences(str(comparative_swot), min_count=3),
         ]
         
         is_valid, messages = self.validate_all(validators)

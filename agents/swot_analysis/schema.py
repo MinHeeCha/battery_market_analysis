@@ -18,7 +18,7 @@ class SWOTAnalysisOutput(BaseModel):
     """Output schema for SWOT analysis agent"""
     lg_swot: SWOTMatrix = Field(..., description="LG Energy Solution SWOT")
     catl_swot: SWOTMatrix = Field(..., description="CATL SWOT")
-    comparative_analysis: str = Field(..., description="Comparative analysis between two companies")
+    comparative_swot: str = Field(..., description="Comparative SWOT analysis between two companies")
     strategic_recommendation: str = Field(default="", description="Strategic recommendations")
     references: List[str] = Field(default_factory=list, description="Source references")
     

@@ -42,7 +42,11 @@ class StateManager:
             state.lg_strategy = data.get("lg_result")
             state.catl_strategy = data.get("catl_result")
         elif phase == "swot_analysis":
-            state.comparative_swot = data.get("result")
+            swot_result = data.get("result")
+            if isinstance(swot_result, dict):
+                state.comparative_swot = swot_result.get("comparative_swot", "")
+            else:
+                state.comparative_swot = swot_result
         elif phase == "report_writing":
             state.final_report = data.get("result")
         
