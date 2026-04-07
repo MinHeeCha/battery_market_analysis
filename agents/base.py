@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 from typing import Dict, Any, Optional
 from config.schema import ProjectState
 from shared.logger import get_logger
+from shared.llm_client import LLMClient
 
 logger = get_logger(__name__)
 
@@ -17,7 +18,18 @@ class BaseAgent(ABC):
     
     def __init__(self, name: str, llm_client=None, retriever=None):
         self.name = name
-        self.llm = llm_client
+        
+        # Initialize LLM client if not provided
+        if llm_client is None:
+            try:
+                self.llm = LLMClient()
+            except ValueError as e:
+                self.logger = get_logger(self.__class__.__name__)
+                self.logger.warning(f"LLM not initialized: {str(e)}")
+                self.llm = None
+        else:
+            self.llm = llm_client
+        
         self.retriever = retriever
         self.logger = get_logger(self.__class__.__name__)
     
