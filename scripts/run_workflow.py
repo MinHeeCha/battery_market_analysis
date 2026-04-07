@@ -2,8 +2,8 @@
 """Run full supervisor workflow and generate markdown + PDF in one command.
 
 Usage:
-	python main.py
-	python main.py --no-save-md
+	python scripts/run_workflow.py
+	python scripts/run_workflow.py --no-save-md
 """
 
 from __future__ import annotations
@@ -14,8 +14,8 @@ from datetime import datetime
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parent
-sys.path.insert(0, str(ROOT))
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(PROJECT_ROOT))
 
 from agents.supervisor.agent import SupervisorAgent
 from retrieval.retriever import Retriever
@@ -33,7 +33,7 @@ def run_pipeline(save_md: bool = True) -> int:
 		logger.info("Battery Analysis: Supervisor -> Markdown -> PDF")
 		logger.info("=" * 60)
 
-		vector_store_path = ROOT / "data" / "vector_store"
+		vector_store_path = PROJECT_ROOT / "data" / "vector_store"
 		retriever = Retriever(vector_store_path=str(vector_store_path))
 
 		info = retriever.get_embedder_info()
@@ -55,7 +55,7 @@ def run_pipeline(save_md: bool = True) -> int:
 
 		timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-		md_path = ROOT / "outputs" / "reports_md" / f"battery_report_{timestamp}.md"
+		md_path = PROJECT_ROOT / "outputs" / "reports_md" / f"battery_report_{timestamp}.md"
 		md_path.parent.mkdir(parents=True, exist_ok=True)
 		if not save_md:
 			md_path.write_text(final_md, encoding="utf-8")
@@ -63,9 +63,9 @@ def run_pipeline(save_md: bool = True) -> int:
 		else:
 			logger.info("Markdown report saved by supervisor (save=True)")
 
-		pdf_path = ROOT / "outputs" / "reports_pdf" / f"battery_report_{timestamp}.pdf"
+		pdf_path = PROJECT_ROOT / "outputs" / "reports_pdf" / f"battery_report_{timestamp}.pdf"
 		pdf_path.parent.mkdir(parents=True, exist_ok=True)
-		visualization_dir = ROOT / "visualization"
+		visualization_dir = PROJECT_ROOT / "visualization"
 		visualization_files = sorted(str(p) for p in visualization_dir.glob("*.png"))
 		if visualization_files:
 			logger.info("Found %d visualization PNG files", len(visualization_files))
