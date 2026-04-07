@@ -24,7 +24,7 @@ from validators.content_validators import (
 )
 from state.state_manager import StateManager
 from report.json_builder import JSONBuilder
-
+from report.markdown_builder import MarkdownBuilder
 logger = get_logger(__name__)
 
 
