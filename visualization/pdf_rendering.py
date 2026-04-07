@@ -18,10 +18,12 @@ from reportlab.lib.enums import TA_CENTER, TA_LEFT
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, StyleSheet1, getSampleStyleSheet
 from reportlab.lib.units import mm
+from reportlab.lib.utils import ImageReader
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import (
     Flowable,
+    Image,
     PageBreak,
     Paragraph,
     SimpleDocTemplate,
@@ -111,18 +113,48 @@ class GradientHero(Flowable):
         c.setFillColor(t.white)
         label_font = self.renderer._font(True)
         max_text_width = w - 36
+        left_padding = 18
+        top_padding = 10
+        bottom_padding = 8
+        gap = 4
+
+        # Reserve vertical zones to avoid overlap in compact section banners.
+        usable_h = max(h - top_padding - bottom_padding, 20)
+        label_h = usable_h * 0.18 if self.label else 0
+        subtitle_h = usable_h * 0.24
+        title_h = max(usable_h - label_h - subtitle_h - (2 * gap), 10)
 
         if self.label:
-            label_size = self.renderer._fit_font_size(self.label, label_font, 10.5, 8.5, max_text_width)
-            self.renderer._draw_heavy_text(c, 18, h - 22, self.label, label_font, label_size, t.white, copies=2)
+            label_size = self.renderer._fit_font_size(
+                self.label,
+                label_font,
+                min(10.5, label_h),
+                7.0,
+                max_text_width,
+            )
+            label_y = h - top_padding - label_size
+            self.renderer._draw_heavy_text(c, left_padding, label_y, self.label, label_font, label_size, t.white, copies=2)
+        else:
+            label_size = 0
+            label_y = h - top_padding
 
-        title_max = 42 if len(self.title) <= 14 else 30
-        title_size = self.renderer._fit_font_size(self.title, label_font, title_max, 24, max_text_width)
-        title_y = h - 26 - label_size - title_size
-        self.renderer._draw_heavy_text(c, 18, title_y, self.title, label_font, title_size, t.white, copies=3)
+        # Cap title size by banner height to prevent subtitle overlap.
+        raw_title_max = 42 if len(self.title) <= 14 else 30
+        title_max = min(raw_title_max, max(16.0, title_h))
+        title_min = 14.0 if h <= 40 * mm else 18.0
+        title_size = self.renderer._fit_font_size(self.title, label_font, title_max, title_min, max_text_width)
 
-        subtitle_size = self.renderer._fit_font_size(self.subtitle, label_font, 12, 9.5, max_text_width)
-        self.renderer._draw_heavy_text(c, 18, 18, self.subtitle, label_font, subtitle_size, t.white, copies=2)
+        title_top_y = label_y - gap
+        title_y = title_top_y - title_size
+        self.renderer._draw_heavy_text(c, left_padding, title_y, self.title, label_font, title_size, t.white, copies=2)
+
+        subtitle_max = min(12.0, max(9.0, subtitle_h * 0.75))
+        subtitle_min = 8.0
+        subtitle_size = self.renderer._fit_font_size(self.subtitle, label_font, subtitle_max, subtitle_min, max_text_width)
+
+        # Keep subtitle under title with safe spacing and inside bottom padding.
+        subtitle_y = max(bottom_padding, title_y - gap - subtitle_size)
+        self.renderer._draw_heavy_text(c, left_padding, subtitle_y, self.subtitle, label_font, subtitle_size, t.white, copies=1)
 
 
 class ChartPlaceholder(Flowable):
@@ -234,12 +266,13 @@ class ChartPlaceholder(Flowable):
 class BatteryReportPDFRenderer:
     """Render markdown reports into structured editorial PDFs."""
 
-    def __init__(self, output_dir: str = "./outputs/reports_pdf"):
+    def __init__(self, output_dir: str = "./outputs/reports_pdf", visualization_files: Optional[Sequence[str]] = None):
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.tokens = DesignTokens()
         self.page_width, self.page_height = A4
         self.content_width = self.page_width - 26 * mm
+        self.visualization_files = [Path(p) for p in (visualization_files or [])]
         self._register_fonts()
         self.styles = self._build_styles()
 
@@ -563,7 +596,57 @@ class BatteryReportPDFRenderer:
         story.append(Paragraph("시장 배경", self.styles["PageTitle"]))
         story.append(self._make_card_grid(report.market, columns=1, tone="content"))
 
+        market_images = self._resolve_market_visualizations()
+        if market_images:
+            story.append(Spacer(1, 4 * mm))
+            story.append(Paragraph("시장 조사 시각화", self.styles["RedSubTitle"]))
+            for image_path in market_images:
+                img = self._build_market_image(image_path)
+                if img is not None:
+                    story.append(img)
+                    story.append(Spacer(1, 4 * mm))
+
         return story
+
+    def _resolve_market_visualizations(self) -> List[Path]:
+        """Find market visualization PNG files.
+
+        Priority:
+        1) Explicitly provided visualization_files
+        2) Auto-discovery under ./visualization/*.png
+        """
+        resolved: List[Path] = []
+
+        for path in self.visualization_files:
+            if path.exists() and path.suffix.lower() == ".png":
+                resolved.append(path)
+
+        if resolved:
+            return resolved
+
+        auto_dir = Path(__file__).resolve().parent
+        auto_files = sorted(auto_dir.glob("*.png"))
+        return auto_files
+
+    def _build_market_image(self, image_path: Path) -> Optional[Image]:
+        """Create a resized reportlab Image flowable while preserving aspect ratio."""
+        try:
+            img_reader = ImageReader(str(image_path))
+            img_w, img_h = img_reader.getSize()
+            if img_w <= 0 or img_h <= 0:
+                return None
+
+            max_w = self.content_width
+            max_h = 82 * mm
+
+            scale = min(max_w / img_w, max_h / img_h)
+            draw_w = img_w * scale
+            draw_h = img_h * scale
+
+            img = Image(str(image_path), width=draw_w, height=draw_h)
+            return img
+        except Exception:
+            return None
 
     def _build_company_page(self, report: ParsedReport, company_name: str, blocks: Sequence[ContentBlock]) -> List:
         story: List = []
@@ -1132,7 +1215,7 @@ class BatteryReportPDFRenderer:
         canvas.restoreState()
 
 
-def render_battery_report_pdf(markdown_text: str, output_path: str) -> Path:
+def render_battery_report_pdf(markdown_text: str, output_path: str, visualization_files: Optional[Sequence[str]] = None) -> Path:
     out = Path(output_path)
-    renderer = BatteryReportPDFRenderer(output_dir=str(out.parent))
+    renderer = BatteryReportPDFRenderer(output_dir=str(out.parent), visualization_files=visualization_files)
     return renderer.render_from_markdown(markdown_text=markdown_text, output_filename=out.name)

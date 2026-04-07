@@ -65,7 +65,16 @@ def run_pipeline(save_md: bool = True) -> int:
 
 		pdf_path = ROOT / "outputs" / "reports_pdf" / f"battery_report_{timestamp}.pdf"
 		pdf_path.parent.mkdir(parents=True, exist_ok=True)
-		rendered_pdf = render_battery_report_pdf(markdown_text=final_md, output_path=str(pdf_path))
+		visualization_dir = ROOT / "visualization"
+		visualization_files = sorted(str(p) for p in visualization_dir.glob("*.png"))
+		if visualization_files:
+			logger.info("Found %d visualization PNG files", len(visualization_files))
+
+		rendered_pdf = render_battery_report_pdf(
+			markdown_text=final_md,
+			output_path=str(pdf_path),
+			visualization_files=visualization_files,
+		)
 
 		logger.info("PDF report saved -> %s", rendered_pdf)
 		logger.info("Pipeline completed successfully")
