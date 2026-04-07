@@ -58,7 +58,6 @@ Battery_analysis/
 │   ├── retry_handler.py       # 재시도 로직 (exponential backoff)
 │   └── handoff_manager.py     # 상태 handoff 관리
 ├── report/                    # 보고서 생성
-│   ├── markdown_builder.py    # MD 보고서 생성
 │   ├── pdf_converter.py       # PDF 변환
 │   └── templates/             # 템플릿
 ├── visualization/             # 시각화
