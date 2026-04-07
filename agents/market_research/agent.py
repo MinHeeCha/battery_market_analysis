@@ -11,6 +11,7 @@ import json
 import re
 import os
 import requests
+from pathlib import Path
 from typing import Dict, Any, List, Optional, Tuple
 from collections import defaultdict
 from agents.base import BaseAgent
@@ -22,6 +23,7 @@ from agents.market_research.prompts import (
     MARKET_RESEARCH_EVALUATION_PROMPT_TEMPLATE,
     MARKET_RESEARCH_REVISION_PROMPT_TEMPLATE
 )
+from agents.market_research.visualizer import MarketResearchVisualizer
 
 
 class MarketResearchEvaluation(BaseModel):
@@ -195,7 +197,7 @@ class MarketResearchAgent(BaseAgent):
         }
     
     def output(self, action_result: Dict[str, Any]) -> Dict[str, Any]:
-        """최종 구조화"""
+        """최종 구조화 + 자동 시각화 생성"""
         self.logger.info("Output: Preparing final result with metadata...")
         
         analysis = action_result.get("analysis", "")
@@ -218,7 +220,29 @@ class MarketResearchAgent(BaseAgent):
         )
         
         self.logger.info(f"Output prepared: Score {output.external_relevance_score}/100, Pass: {output.pass_evaluation}")
-        return output.dict()
+        
+        # 자동 시각화 생성
+        try:
+            self.logger.info("Output: Generating market research visualizations...")
+            output_dict = output.dict()
+            
+            visualizer = MarketResearchVisualizer(
+                output_dir="./visualization"
+            )
+            visualization_files = visualizer.visualize_market_research(output_dict)
+            
+            output_dict["visualization_files"] = visualization_files
+            self.logger.info(f"✓ Generated {len(visualization_files)} visualization files")
+            
+            for file_path in visualization_files:
+                self.logger.info(f"  - {Path(file_path).name}")
+            
+            return output_dict
+            
+        except Exception as e:
+            self.logger.warning(f"Visualization generation failed (non-blocking): {e}")
+            # 시각화 실패해도 analysis 결과는 반환
+            return output.dict()
     
     def _generate_initial_draft(self, context_str: str, search_context: str) -> str:
         """초안 생성"""
