@@ -100,9 +100,9 @@ class MarketResearchVisualizer:
             # 분석 텍스트에서 데이터 추출
             extracted_data = self._extract_data_from_analysis(analysis_text)
             
-            # 1. 글로벌 배터리 시장 규모 및 성장률 - 시각적 정량 정보 (가장 중요)
-            logger.info("  → Generating Market Size & Growth Chart...")
-            self._generate_market_size_chart(extracted_data)
+            # 1. Executive Summary (정성) - 가장 중요한 차트
+            logger.info("  → Generating Executive Summary...")
+            self._generate_executive_summary(analysis_text, extracted_data)
             
             # 2. 공급망 리스크 맵 - 두 번째로 중요한 차트 (시장 배경/리스크 최적)
             logger.info("  → Generating Supply Chain Risk Map...")
@@ -251,7 +251,7 @@ class MarketResearchVisualizer:
             ax2.grid(True, alpha=0.3, axis='y')
             
             plt.tight_layout()
-            filepath = self._save_figure("01_market_size_growth.png")
+            filepath = self._save_figure("02_market_size_growth.png")
             return filepath
             
         except Exception as e:
@@ -425,7 +425,7 @@ class MarketResearchVisualizer:
             ax.legend(handles=[high_patch, med_patch, low_patch], loc='lower left')
             
             plt.tight_layout()
-            filepath = self._save_figure("02_supply_chain_risk_map.png")
+            filepath = self._save_figure("05_supply_chain_risk_map.png")
             return filepath
             
         except Exception as e:
