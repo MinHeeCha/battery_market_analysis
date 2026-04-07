@@ -12,7 +12,7 @@ load_dotenv()
 @dataclass
 class LLMConfig:
     """LLM configuration"""
-    model: str = os.getenv("LLM_MODEL", "gpt-4o")
+    model: str = os.getenv("LLM_MODEL", "gpt-4")
     api_key: str = os.getenv("OPENAI_API_KEY", "")
     temperature: float = 0.7
     max_tokens: int = 2000

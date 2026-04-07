@@ -66,7 +66,7 @@ source .venv/bin/activate
 
 pip install -r requirements.txt
 cp .env.example .env        #OPENAI_API_KEY, TAVILY_API_KEY 설정
-python scripts/ingest_documents.py --reset      # 문서 임베딩
+python scripts/ingest_documents.py     # 문서 임베딩
 python scripts/run_workflow.py                  # 전체 파이프라인 실행
 ```
 

@@ -1959,3 +1959,510 @@ During task with name 'parallel_research' and id 'd5ba8293-8ee3-31ea-bb01-923836
 2026-04-07 17:28:00 - __main__ - INFO - Found 4 visualization PNG files
 2026-04-07 17:28:00 - __main__ - INFO - PDF report saved -> /Users/yubin/playground/battery_market_analysis/outputs/reports_pdf/battery_report_20260407_172800.pdf
 2026-04-07 17:28:00 - __main__ - INFO - Pipeline completed successfully
+2026-04-07 17:44:33 - retrieval.embedder - INFO - Loading embedding model: BAAI/bge-m3
+2026-04-07 17:44:36 - retrieval.embedder - INFO - Model loaded successfully on device: cpu
+2026-04-07 17:44:37 - __main__ - INFO - Reading PDF: LGES_2024_ESG_final.pdf
+2026-04-07 17:44:38 - __main__ - INFO - LGES_2024_ESG_final.pdf -> 152 chunks
+2026-04-07 17:44:38 - __main__ - INFO - Reading PDF: catl_2026_summary.pdf
+2026-04-07 17:44:38 - __main__ - INFO - catl_2026_summary.pdf -> 222 chunks
+2026-04-07 17:44:38 - __main__ - INFO - Reading PDF: k-battery-recharge.pdf
+2026-04-07 17:44:39 - __main__ - INFO - k-battery-recharge.pdf -> 64 chunks
+2026-04-07 17:44:39 - __main__ - INFO - Generating embeddings for 438 chunks...
+2026-04-07 17:45:03 - retrieval.embedder - INFO - Loading embedding model: BAAI/bge-m3
+2026-04-07 17:45:06 - retrieval.embedder - INFO - Model loaded successfully on device: cpu
+2026-04-07 17:45:06 - __main__ - INFO - Reading PDF: LGES_2024_ESG_final.pdf
+2026-04-07 17:45:07 - __main__ - INFO - LGES_2024_ESG_final.pdf -> 152 chunks
+2026-04-07 17:45:07 - __main__ - INFO - Reading PDF: catl_2026_summary.pdf
+2026-04-07 17:45:07 - __main__ - INFO - catl_2026_summary.pdf -> 222 chunks
+2026-04-07 17:45:07 - __main__ - INFO - Reading PDF: k-battery-recharge.pdf
+2026-04-07 17:45:08 - __main__ - INFO - k-battery-recharge.pdf -> 64 chunks
+2026-04-07 17:45:08 - __main__ - INFO - Generating embeddings for 438 chunks...
+2026-04-07 17:45:54 - __main__ - INFO - Upserting to Chroma collection: battery_documents
+2026-04-07 17:45:55 - __main__ - INFO - Ingestion completed. Collection count=438
+2026-04-07 17:46:34 - __main__ - INFO - ============================================================
+2026-04-07 17:46:34 - __main__ - INFO - Battery Analysis: Supervisor -> Markdown -> PDF
+2026-04-07 17:46:34 - __main__ - INFO - ============================================================
+2026-04-07 17:46:34 - retrieval.retriever - INFO - Initializing embedder with model: BAAI/bge-m3
+2026-04-07 17:46:34 - retrieval.embedder - INFO - Loading embedding model: BAAI/bge-m3
+2026-04-07 17:46:37 - retrieval.embedder - INFO - Model loaded successfully on device: cpu
+2026-04-07 17:46:37 - retrieval.retriever - INFO - Embedder initialized successfully
+2026-04-07 17:46:38 - retrieval.retriever - INFO - Chroma initialized at /Users/yubin/playground/skala_playground2/battery_market_analysis/data/vector_store (collection=battery_documents, count=438)
+2026-04-07 17:46:38 - agents.supervisor.agent - INFO - [SupervisorAgent] workflow START
+2026-04-07 17:46:38 - agents.supervisor.agent - INFO - [supervisor] parallel_research START
+2026-04-07 17:46:38 - shared.llm_client - INFO - LLM Client initialized with model: gpt-4
+2026-04-07 17:46:38 - CompanyResearchAgent - INFO - LLM client auto-initialized for CompanyResearchAgent
+2026-04-07 17:46:38 - CompanyResearchAgent - INFO - =[CompanyResearchAgent]= Agent starting...
+2026-04-07 17:46:38 - CompanyResearchAgent - INFO -   → Think phase...
+2026-04-07 17:46:38 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 현재 사업 포트폴리오 현황 제품 고객 지역 (top_k=5)
+2026-04-07 17:46:39 - shared.llm_client - INFO - LLM Client initialized with model: gpt-4
+2026-04-07 17:46:39 - MarketResearchAgent - INFO - LLM client auto-initialized for MarketResearchAgent
+2026-04-07 17:46:39 - MarketResearchAgent - INFO - =[MarketResearchAgent]= Agent starting...
+2026-04-07 17:46:39 - MarketResearchAgent - INFO -   → Think phase...
+2026-04-07 17:46:39 - MarketResearchAgent - INFO - Thinking: Searching market documents (RAG + Web)...
+2026-04-07 17:46:39 - retrieval.retriever - INFO - Searching for: 글로벌 EV 시장 캐즘 보조금 감소 (top_k=5)
+2026-04-07 17:46:41 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:46:41 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:46:41 - MarketResearchAgent - INFO - Vector search - 글로벌 EV 시장 캐즘 보조금 감소: 5 results
+2026-04-07 17:46:42 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 시장 환경 변화 대응 전략 EV 캐즘 대응 (top_k=5)
+2026-04-07 17:46:42 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:46:43 - MarketResearchAgent - INFO - Web search - 글로벌 EV 시장 캐즘 보조금 감소: 5 results
+2026-04-07 17:46:43 - MarketResearchAgent - INFO - Combined - 글로벌 EV 시장 캐즘 보조금 감소: 6 unique results
+2026-04-07 17:46:43 - retrieval.retriever - INFO - Searching for: 배터리 수요 구조 변화 가격 압력 (top_k=5)
+2026-04-07 17:46:43 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 다각화 전략 방향 (top_k=5)
+2026-04-07 17:46:43 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:46:43 - MarketResearchAgent - INFO - Vector search - 배터리 수요 구조 변화 가격 압력: 5 results
+2026-04-07 17:46:43 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:46:43 - MarketResearchAgent - INFO - Web search - 배터리 수요 구조 변화 가격 압력: 5 results
+2026-04-07 17:46:43 - MarketResearchAgent - INFO - Combined - 배터리 수요 구조 변화 가격 압력: 7 unique results
+2026-04-07 17:46:43 - retrieval.retriever - INFO - Searching for: 배터리 관세 정책 규제 (top_k=5)
+2026-04-07 17:46:43 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 핵심 경쟁력 (top_k=5)
+2026-04-07 17:46:43 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:46:43 - MarketResearchAgent - INFO - Vector search - 배터리 관세 정책 규제: 5 results
+2026-04-07 17:46:43 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:46:44 - MarketResearchAgent - INFO - Web search - 배터리 관세 정책 규제: 5 results
+2026-04-07 17:46:44 - MarketResearchAgent - INFO - Combined - 배터리 관세 정책 규제: 6 unique results
+2026-04-07 17:46:44 - retrieval.retriever - INFO - Searching for: 배터리 공급망 원자재 물류 (top_k=5)
+2026-04-07 17:46:44 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 수익성 구조 및 전략 (top_k=5)
+2026-04-07 17:46:44 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:46:44 - MarketResearchAgent - INFO - Vector search - 배터리 공급망 원자재 물류: 5 results
+2026-04-07 17:46:44 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:46:45 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 주요 리스크 및 과제 (top_k=5)
+2026-04-07 17:46:45 - MarketResearchAgent - INFO - Web search - 배터리 공급망 원자재 물류: 5 results
+2026-04-07 17:46:45 - MarketResearchAgent - INFO - Combined - 배터리 공급망 원자재 물류: 7 unique results
+2026-04-07 17:46:45 - retrieval.retriever - INFO - Searching for: 차세대 배터리 기술 경쟁 (top_k=5)
+2026-04-07 17:46:45 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:46:45 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:46:45 - MarketResearchAgent - INFO - Vector search - 차세대 배터리 기술 경쟁: 5 results
+2026-04-07 17:46:45 - retrieval.retriever - INFO - Searching for: CATL 현재 사업 포트폴리오 현황 제품 고객 지역 (top_k=5)
+2026-04-07 17:46:45 - MarketResearchAgent - INFO - Web search - 차세대 배터리 기술 경쟁: 5 results
+2026-04-07 17:46:45 - MarketResearchAgent - INFO - Combined - 차세대 배터리 기술 경쟁: 7 unique results
+2026-04-07 17:46:45 - MarketResearchAgent - INFO - Final results: 15 items from all searches
+2026-04-07 17:46:45 - MarketResearchAgent - INFO -   → Act phase...
+2026-04-07 17:46:45 - MarketResearchAgent - INFO - Acting: Generating market analysis with evaluation cycle...
+2026-04-07 17:46:45 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:46:46 - shared.llm_client - ERROR - LLM API call failed: Error code: 401 - {'error': {'message': 'Incorrect API key provided: sk-proj-*******************************************************************70L-. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'code': 'invalid_api_key', 'param': None}, 'status': 401}
+2026-04-07 17:46:46 - MarketResearchAgent - ERROR - Draft generation failed: Error code: 401 - {'error': {'message': 'Incorrect API key provided: sk-proj-*******************************************************************70L-. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'code': 'invalid_api_key', 'param': None}, 'status': 401}
+2026-04-07 17:46:46 - MarketResearchAgent - INFO - Generated initial draft
+2026-04-07 17:46:46 - retrieval.retriever - INFO - Searching for: CATL 시장 환경 변화 대응 전략 EV 캐즘 대응 (top_k=5)
+2026-04-07 17:46:46 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:46:46 - shared.llm_client - ERROR - LLM API call failed: Error code: 401 - {'error': {'message': 'Incorrect API key provided: sk-proj-*******************************************************************70L-. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'code': 'invalid_api_key', 'param': None}, 'status': 401}
+2026-04-07 17:46:46 - MarketResearchAgent - ERROR - Evaluation failed: Error code: 401 - {'error': {'message': 'Incorrect API key provided: sk-proj-*******************************************************************70L-. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'code': 'invalid_api_key', 'param': None}, 'status': 401}
+2026-04-07 17:46:46 - MarketResearchAgent - INFO - Evaluation: 70/100 (Pass: False)
+2026-04-07 17:46:46 - MarketResearchAgent - INFO - Revision cycle 1
+2026-04-07 17:46:46 - shared.llm_client - ERROR - LLM API call failed: Error code: 401 - {'error': {'message': 'Incorrect API key provided: sk-proj-*******************************************************************70L-. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'code': 'invalid_api_key', 'param': None}, 'status': 401}
+2026-04-07 17:46:46 - MarketResearchAgent - ERROR - Revision failed: Error code: 401 - {'error': {'message': 'Incorrect API key provided: sk-proj-*******************************************************************70L-. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'code': 'invalid_api_key', 'param': None}, 'status': 401}
+2026-04-07 17:46:47 - shared.llm_client - ERROR - LLM API call failed: Error code: 401 - {'error': {'message': 'Incorrect API key provided: sk-proj-*******************************************************************70L-. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'code': 'invalid_api_key', 'param': None}, 'status': 401}
+2026-04-07 17:46:47 - MarketResearchAgent - ERROR - Evaluation failed: Error code: 401 - {'error': {'message': 'Incorrect API key provided: sk-proj-*******************************************************************70L-. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'code': 'invalid_api_key', 'param': None}, 'status': 401}
+2026-04-07 17:46:47 - MarketResearchAgent - INFO - After revision 1: 70/100
+2026-04-07 17:46:47 - MarketResearchAgent - INFO - Revision cycle 2
+2026-04-07 17:46:47 - shared.llm_client - ERROR - LLM API call failed: Error code: 401 - {'error': {'message': 'Incorrect API key provided: sk-proj-*******************************************************************70L-. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'code': 'invalid_api_key', 'param': None}, 'status': 401}
+2026-04-07 17:46:47 - MarketResearchAgent - ERROR - Revision failed: Error code: 401 - {'error': {'message': 'Incorrect API key provided: sk-proj-*******************************************************************70L-. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'code': 'invalid_api_key', 'param': None}, 'status': 401}
+2026-04-07 17:46:47 - retrieval.retriever - INFO - Searching for: CATL 다각화 전략 방향 (top_k=5)
+2026-04-07 17:46:47 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:46:47 - shared.llm_client - ERROR - LLM API call failed: Error code: 401 - {'error': {'message': 'Incorrect API key provided: sk-proj-*******************************************************************70L-. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'code': 'invalid_api_key', 'param': None}, 'status': 401}
+2026-04-07 17:46:47 - MarketResearchAgent - ERROR - Evaluation failed: Error code: 401 - {'error': {'message': 'Incorrect API key provided: sk-proj-*******************************************************************70L-. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'code': 'invalid_api_key', 'param': None}, 'status': 401}
+2026-04-07 17:46:47 - MarketResearchAgent - INFO - After revision 2: 70/100
+2026-04-07 17:46:47 - MarketResearchAgent - INFO -   → Output phase...
+2026-04-07 17:46:47 - MarketResearchAgent - INFO - Output: Preparing final result with metadata...
+2026-04-07 17:46:47 - MarketResearchAgent - INFO - Output prepared: Score 70/100, Pass: False
+2026-04-07 17:46:47 - agents.market_research.visualizer - INFO - MarketResearchVisualizer initialized: visualization
+2026-04-07 17:46:47 - agents.market_research.visualizer - INFO - Starting market research visualization generation (Top 2 charts)...
+2026-04-07 17:46:47 - agents.market_research.visualizer - INFO -   → Generating Executive Summary...
+2026-04-07 17:46:47 - agents.market_research.visualizer - WARNING - Executive summary generation failed: Cannot create a GUI FigureManager outside the main thread using the MacOS backend. Use a non-interactive backend like 'agg' to make plots on worker threads.
+2026-04-07 17:46:47 - agents.market_research.visualizer - INFO -   → Generating Supply Chain Risk Map...
+2026-04-07 17:46:47 - agents.market_research.visualizer - WARNING - Supply chain risk map generation failed: Cannot create a GUI FigureManager outside the main thread using the MacOS backend. Use a non-interactive backend like 'agg' to make plots on worker threads.
+2026-04-07 17:46:47 - agents.market_research.visualizer - INFO - ✓ Generated 0 visualization files (Top 2 priority)
+2026-04-07 17:46:47 - MarketResearchAgent - INFO - Generated 0 market visualization files
+2026-04-07 17:46:47 - MarketResearchAgent - INFO - =[MarketResearchAgent]= Agent completed successfully ✓
+2026-04-07 17:46:47 - agents.supervisor.agent - INFO - [market_research] done (len=26)
+2026-04-07 17:46:47 - retrieval.retriever - INFO - Searching for: CATL 핵심 경쟁력 (top_k=5)
+2026-04-07 17:46:48 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:46:48 - retrieval.retriever - INFO - Searching for: CATL 수익성 구조 및 전략 (top_k=5)
+2026-04-07 17:46:48 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:46:49 - retrieval.retriever - INFO - Searching for: CATL 주요 리스크 및 과제 (top_k=5)
+2026-04-07 17:46:49 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:46:49 - CompanyResearchAgent - INFO -   → Act phase...
+2026-04-07 17:46:50 - shared.llm_client - ERROR - LLM API call failed: Error code: 401 - {'error': {'message': 'Incorrect API key provided: sk-proj-*******************************************************************70L-. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'code': 'invalid_api_key', 'param': None}, 'status': 401}
+2026-04-07 17:46:50 - CompanyResearchAgent - WARNING - CompanyResearchAgent: JSON mode failed, falling back to text mode
+2026-04-07 17:46:50 - shared.llm_client - ERROR - LLM API call failed: Error code: 401 - {'error': {'message': 'Incorrect API key provided: sk-proj-*******************************************************************70L-. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'code': 'invalid_api_key', 'param': None}, 'status': 401}
+2026-04-07 17:46:50 - CompanyResearchAgent - ERROR - CompanyResearchAgent: LLM call failed: Error code: 401 - {'error': {'message': 'Incorrect API key provided: sk-proj-*******************************************************************70L-. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'code': 'invalid_api_key', 'param': None}, 'status': 401}
+2026-04-07 17:46:50 - CompanyResearchAgent - ERROR - =[CompanyResearchAgent]= Agent failed: Error code: 401 - {'error': {'message': 'Incorrect API key provided: sk-proj-*******************************************************************70L-. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'code': 'invalid_api_key', 'param': None}, 'status': 401}
+2026-04-07 17:46:50 - __main__ - ERROR - Pipeline failed: Error code: 401 - {'error': {'message': 'Incorrect API key provided: sk-proj-*******************************************************************70L-. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'code': 'invalid_api_key', 'param': None}, 'status': 401}
+Traceback (most recent call last):
+  File "/Users/yubin/playground/skala_playground2/battery_market_analysis/scripts/run_workflow.py", line 50, in run_pipeline
+    final_md = supervisor.run(save=save_md)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/yubin/playground/skala_playground2/battery_market_analysis/agents/supervisor/agent.py", line 254, in run
+    final_state: BatteryAnalysisState = self.graph.invoke({})
+                                        ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/yubin/playground/skala_playground2/battery_market_analysis/.venv/lib/python3.11/site-packages/langgraph/pregel/main.py", line 3309, in invoke
+    for chunk in self.stream(
+  File "/Users/yubin/playground/skala_playground2/battery_market_analysis/.venv/lib/python3.11/site-packages/langgraph/pregel/main.py", line 2736, in stream
+    for _ in runner.tick(
+  File "/Users/yubin/playground/skala_playground2/battery_market_analysis/.venv/lib/python3.11/site-packages/langgraph/pregel/_runner.py", line 167, in tick
+    run_with_retry(
+  File "/Users/yubin/playground/skala_playground2/battery_market_analysis/.venv/lib/python3.11/site-packages/langgraph/pregel/_retry.py", line 126, in run_with_retry
+    return task.proc.invoke(task.input, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/yubin/playground/skala_playground2/battery_market_analysis/.venv/lib/python3.11/site-packages/langgraph/_internal/_runnable.py", line 656, in invoke
+    input = context.run(step.invoke, input, config, **kwargs)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/yubin/playground/skala_playground2/battery_market_analysis/.venv/lib/python3.11/site-packages/langgraph/_internal/_runnable.py", line 400, in invoke
+    ret = self.func(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/yubin/playground/skala_playground2/battery_market_analysis/agents/supervisor/agent.py", line 76, in parallel_research
+    company = cf.result()
+              ^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.11/3.11.14_3/Frameworks/Python.framework/Versions/3.11/lib/python3.11/concurrent/futures/_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.11/3.11.14_3/Frameworks/Python.framework/Versions/3.11/lib/python3.11/concurrent/futures/_base.py", line 401, in __get_result
+    raise self._exception
+  File "/opt/homebrew/Cellar/python@3.11/3.11.14_3/Frameworks/Python.framework/Versions/3.11/lib/python3.11/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/yubin/playground/skala_playground2/battery_market_analysis/agents/supervisor/agent.py", line 56, in _run_company
+    result = agent.run({})
+             ^^^^^^^^^^^^^
+  File "/Users/yubin/playground/skala_playground2/battery_market_analysis/agents/base.py", line 256, in run
+    action_result = self.act(thought)
+                    ^^^^^^^^^^^^^^^^^
+  File "/Users/yubin/playground/skala_playground2/battery_market_analysis/agents/company_research/agent.py", line 91, in act
+    llm_json = self.call_llm(
+               ^^^^^^^^^^^^^^
+  File "/Users/yubin/playground/skala_playground2/battery_market_analysis/agents/base.py", line 134, in call_llm
+    response = self.llm.invoke(
+               ^^^^^^^^^^^^^^^^
+  File "/Users/yubin/playground/skala_playground2/battery_market_analysis/shared/llm_client.py", line 78, in invoke
+    response = self.client.chat.completions.create(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/yubin/playground/skala_playground2/battery_market_analysis/.venv/lib/python3.11/site-packages/openai/_utils/_utils.py", line 271, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/yubin/playground/skala_playground2/battery_market_analysis/.venv/lib/python3.11/site-packages/openai/resources/chat/completions.py", line 659, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/yubin/playground/skala_playground2/battery_market_analysis/.venv/lib/python3.11/site-packages/openai/_base_client.py", line 1180, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/yubin/playground/skala_playground2/battery_market_analysis/.venv/lib/python3.11/site-packages/openai/_base_client.py", line 869, in request
+    return self._request(
+           ^^^^^^^^^^^^^^
+  File "/Users/yubin/playground/skala_playground2/battery_market_analysis/.venv/lib/python3.11/site-packages/openai/_base_client.py", line 960, in _request
+    raise self._make_status_error_from_response(err.response) from None
+openai.AuthenticationError: Error code: 401 - {'error': {'message': 'Incorrect API key provided: sk-proj-*******************************************************************70L-. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'code': 'invalid_api_key', 'param': None}, 'status': 401}
+During task with name 'parallel_research' and id '46f1265a-169e-cea1-88b4-f124585b8636'
+2026-04-07 17:49:19 - __main__ - INFO - ============================================================
+2026-04-07 17:49:19 - __main__ - INFO - Battery Analysis: Supervisor -> Markdown -> PDF
+2026-04-07 17:49:19 - __main__ - INFO - ============================================================
+2026-04-07 17:49:19 - retrieval.retriever - INFO - Initializing embedder with model: BAAI/bge-m3
+2026-04-07 17:49:19 - retrieval.embedder - INFO - Loading embedding model: BAAI/bge-m3
+2026-04-07 17:49:22 - retrieval.embedder - INFO - Model loaded successfully on device: cpu
+2026-04-07 17:49:22 - retrieval.retriever - INFO - Embedder initialized successfully
+2026-04-07 17:49:22 - retrieval.retriever - INFO - Chroma initialized at /Users/yubin/playground/skala_playground2/battery_market_analysis/data/vector_store (collection=battery_documents, count=438)
+2026-04-07 17:49:22 - agents.supervisor.agent - INFO - [SupervisorAgent] workflow START
+2026-04-07 17:49:22 - agents.supervisor.agent - INFO - [supervisor] parallel_research START
+2026-04-07 17:49:22 - shared.llm_client - INFO - LLM Client initialized with model: gpt-4
+2026-04-07 17:49:22 - CompanyResearchAgent - INFO - LLM client auto-initialized for CompanyResearchAgent
+2026-04-07 17:49:22 - CompanyResearchAgent - INFO - =[CompanyResearchAgent]= Agent starting...
+2026-04-07 17:49:22 - CompanyResearchAgent - INFO -   → Think phase...
+2026-04-07 17:49:22 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 현재 사업 포트폴리오 현황 제품 고객 지역 (top_k=5)
+2026-04-07 17:49:22 - shared.llm_client - INFO - LLM Client initialized with model: gpt-4
+2026-04-07 17:49:22 - MarketResearchAgent - INFO - LLM client auto-initialized for MarketResearchAgent
+2026-04-07 17:49:22 - MarketResearchAgent - INFO - =[MarketResearchAgent]= Agent starting...
+2026-04-07 17:49:22 - MarketResearchAgent - INFO -   → Think phase...
+2026-04-07 17:49:22 - MarketResearchAgent - INFO - Thinking: Searching market documents (RAG + Web)...
+2026-04-07 17:49:22 - retrieval.retriever - INFO - Searching for: 글로벌 EV 시장 캐즘 보조금 감소 (top_k=5)
+2026-04-07 17:49:25 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:49:25 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:49:25 - MarketResearchAgent - INFO - Vector search - 글로벌 EV 시장 캐즘 보조금 감소: 5 results
+2026-04-07 17:49:26 - MarketResearchAgent - INFO - Web search - 글로벌 EV 시장 캐즘 보조금 감소: 5 results
+2026-04-07 17:49:26 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 시장 환경 변화 대응 전략 EV 캐즘 대응 (top_k=5)
+2026-04-07 17:49:26 - MarketResearchAgent - INFO - Combined - 글로벌 EV 시장 캐즘 보조금 감소: 6 unique results
+2026-04-07 17:49:26 - retrieval.retriever - INFO - Searching for: 배터리 수요 구조 변화 가격 압력 (top_k=5)
+2026-04-07 17:49:26 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:49:26 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:49:26 - MarketResearchAgent - INFO - Vector search - 배터리 수요 구조 변화 가격 압력: 5 results
+2026-04-07 17:49:27 - MarketResearchAgent - INFO - Web search - 배터리 수요 구조 변화 가격 압력: 5 results
+2026-04-07 17:49:27 - MarketResearchAgent - INFO - Combined - 배터리 수요 구조 변화 가격 압력: 7 unique results
+2026-04-07 17:49:27 - retrieval.retriever - INFO - Searching for: 배터리 관세 정책 규제 (top_k=5)
+2026-04-07 17:49:27 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 다각화 전략 방향 (top_k=5)
+2026-04-07 17:49:27 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:49:27 - MarketResearchAgent - INFO - Vector search - 배터리 관세 정책 규제: 5 results
+2026-04-07 17:49:27 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:49:27 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 핵심 경쟁력 (top_k=5)
+2026-04-07 17:49:27 - MarketResearchAgent - INFO - Web search - 배터리 관세 정책 규제: 5 results
+2026-04-07 17:49:27 - MarketResearchAgent - INFO - Combined - 배터리 관세 정책 규제: 6 unique results
+2026-04-07 17:49:27 - retrieval.retriever - INFO - Searching for: 배터리 공급망 원자재 물류 (top_k=5)
+2026-04-07 17:49:27 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:49:27 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:49:27 - MarketResearchAgent - INFO - Vector search - 배터리 공급망 원자재 물류: 5 results
+2026-04-07 17:49:28 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 수익성 구조 및 전략 (top_k=5)
+2026-04-07 17:49:28 - MarketResearchAgent - INFO - Web search - 배터리 공급망 원자재 물류: 5 results
+2026-04-07 17:49:28 - MarketResearchAgent - INFO - Combined - 배터리 공급망 원자재 물류: 7 unique results
+2026-04-07 17:49:28 - retrieval.retriever - INFO - Searching for: 차세대 배터리 기술 경쟁 (top_k=5)
+2026-04-07 17:49:28 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:49:28 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:49:28 - MarketResearchAgent - INFO - Vector search - 차세대 배터리 기술 경쟁: 5 results
+2026-04-07 17:49:29 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 주요 리스크 및 과제 (top_k=5)
+2026-04-07 17:49:29 - MarketResearchAgent - INFO - Web search - 차세대 배터리 기술 경쟁: 5 results
+2026-04-07 17:49:29 - MarketResearchAgent - INFO - Combined - 차세대 배터리 기술 경쟁: 7 unique results
+2026-04-07 17:49:29 - MarketResearchAgent - INFO - Final results: 15 items from all searches
+2026-04-07 17:49:29 - MarketResearchAgent - INFO -   → Act phase...
+2026-04-07 17:49:29 - MarketResearchAgent - INFO - Acting: Generating market analysis with evaluation cycle...
+2026-04-07 17:49:29 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:49:29 - retrieval.retriever - INFO - Searching for: CATL 현재 사업 포트폴리오 현황 제품 고객 지역 (top_k=5)
+2026-04-07 17:49:29 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:49:30 - retrieval.retriever - INFO - Searching for: CATL 시장 환경 변화 대응 전략 EV 캐즘 대응 (top_k=5)
+2026-04-07 17:49:30 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:49:31 - retrieval.retriever - INFO - Searching for: CATL 다각화 전략 방향 (top_k=5)
+2026-04-07 17:49:31 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:49:31 - retrieval.retriever - INFO - Searching for: CATL 핵심 경쟁력 (top_k=5)
+2026-04-07 17:49:31 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:49:32 - retrieval.retriever - INFO - Searching for: CATL 수익성 구조 및 전략 (top_k=5)
+2026-04-07 17:49:32 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:49:33 - retrieval.retriever - INFO - Searching for: CATL 주요 리스크 및 과제 (top_k=5)
+2026-04-07 17:49:33 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:49:33 - CompanyResearchAgent - INFO -   → Act phase...
+2026-04-07 17:49:34 - shared.llm_client - ERROR - LLM API call failed: Error code: 400 - {'error': {'message': "Invalid parameter: 'response_format' of type 'json_object' is not supported with this model.", 'type': 'invalid_request_error', 'param': 'response_format', 'code': None}}
+2026-04-07 17:49:34 - CompanyResearchAgent - WARNING - CompanyResearchAgent: JSON mode failed, falling back to text mode
+2026-04-07 17:50:02 - shared.llm_client - INFO - LLM response received (1108 chars)
+2026-04-07 17:50:02 - shared.llm_client - ERROR - LLM API call failed: Error code: 400 - {'error': {'message': "Invalid parameter: 'response_format' of type 'json_object' is not supported with this model.", 'type': 'invalid_request_error', 'param': 'response_format', 'code': None}}
+2026-04-07 17:50:02 - CompanyResearchAgent - WARNING - CompanyResearchAgent: JSON mode failed, falling back to text mode
+2026-04-07 17:50:02 - shared.llm_client - ERROR - LLM API call failed: Error code: 400 - {'error': {'message': "This model's maximum context length is 8192 tokens. However, you requested 8526 tokens (7026 in the messages, 1500 in the completion). Please reduce the length of the messages or completion.", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}
+2026-04-07 17:50:02 - CompanyResearchAgent - ERROR - CompanyResearchAgent: LLM call failed: Error code: 400 - {'error': {'message': "This model's maximum context length is 8192 tokens. However, you requested 8526 tokens (7026 in the messages, 1500 in the completion). Please reduce the length of the messages or completion.", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}
+2026-04-07 17:50:02 - CompanyResearchAgent - ERROR - =[CompanyResearchAgent]= Agent failed: Error code: 400 - {'error': {'message': "This model's maximum context length is 8192 tokens. However, you requested 8526 tokens (7026 in the messages, 1500 in the completion). Please reduce the length of the messages or completion.", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}
+2026-04-07 17:50:08 - shared.llm_client - INFO - LLM response received (878 chars)
+2026-04-07 17:50:08 - MarketResearchAgent - INFO - Generated initial draft
+2026-04-07 17:50:18 - shared.llm_client - INFO - LLM response received (286 chars)
+2026-04-07 17:50:18 - MarketResearchAgent - INFO - Evaluation: 100/100 (Pass: True)
+2026-04-07 17:50:18 - MarketResearchAgent - INFO -   → Output phase...
+2026-04-07 17:50:18 - MarketResearchAgent - INFO - Output: Preparing final result with metadata...
+2026-04-07 17:50:18 - MarketResearchAgent - INFO - Output prepared: Score 100/100, Pass: True
+2026-04-07 17:50:18 - agents.market_research.visualizer - INFO - MarketResearchVisualizer initialized: visualization
+2026-04-07 17:50:18 - agents.market_research.visualizer - INFO - Starting market research visualization generation (Top 2 charts)...
+2026-04-07 17:50:18 - agents.market_research.visualizer - INFO -   → Generating Executive Summary...
+2026-04-07 17:50:18 - agents.market_research.visualizer - WARNING - Executive summary generation failed: Cannot create a GUI FigureManager outside the main thread using the MacOS backend. Use a non-interactive backend like 'agg' to make plots on worker threads.
+2026-04-07 17:50:18 - agents.market_research.visualizer - INFO -   → Generating Supply Chain Risk Map...
+2026-04-07 17:50:18 - agents.market_research.visualizer - WARNING - Supply chain risk map generation failed: Cannot create a GUI FigureManager outside the main thread using the MacOS backend. Use a non-interactive backend like 'agg' to make plots on worker threads.
+2026-04-07 17:50:18 - agents.market_research.visualizer - INFO - ✓ Generated 0 visualization files (Top 2 priority)
+2026-04-07 17:50:18 - MarketResearchAgent - INFO - Generated 0 market visualization files
+2026-04-07 17:50:18 - MarketResearchAgent - INFO - =[MarketResearchAgent]= Agent completed successfully ✓
+2026-04-07 17:50:18 - agents.supervisor.agent - INFO - [market_research] done (len=878)
+2026-04-07 17:50:18 - __main__ - ERROR - Pipeline failed: Error code: 400 - {'error': {'message': "This model's maximum context length is 8192 tokens. However, you requested 8526 tokens (7026 in the messages, 1500 in the completion). Please reduce the length of the messages or completion.", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}
+Traceback (most recent call last):
+  File "/Users/yubin/playground/skala_playground2/battery_market_analysis/scripts/run_workflow.py", line 50, in run_pipeline
+    final_md = supervisor.run(save=save_md)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/yubin/playground/skala_playground2/battery_market_analysis/agents/supervisor/agent.py", line 254, in run
+    final_state: BatteryAnalysisState = self.graph.invoke({})
+                                        ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/yubin/playground/skala_playground2/battery_market_analysis/.venv/lib/python3.11/site-packages/langgraph/pregel/main.py", line 3309, in invoke
+    for chunk in self.stream(
+  File "/Users/yubin/playground/skala_playground2/battery_market_analysis/.venv/lib/python3.11/site-packages/langgraph/pregel/main.py", line 2736, in stream
+    for _ in runner.tick(
+  File "/Users/yubin/playground/skala_playground2/battery_market_analysis/.venv/lib/python3.11/site-packages/langgraph/pregel/_runner.py", line 167, in tick
+    run_with_retry(
+  File "/Users/yubin/playground/skala_playground2/battery_market_analysis/.venv/lib/python3.11/site-packages/langgraph/pregel/_retry.py", line 126, in run_with_retry
+    return task.proc.invoke(task.input, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/yubin/playground/skala_playground2/battery_market_analysis/.venv/lib/python3.11/site-packages/langgraph/_internal/_runnable.py", line 656, in invoke
+    input = context.run(step.invoke, input, config, **kwargs)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/yubin/playground/skala_playground2/battery_market_analysis/.venv/lib/python3.11/site-packages/langgraph/_internal/_runnable.py", line 400, in invoke
+    ret = self.func(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/yubin/playground/skala_playground2/battery_market_analysis/agents/supervisor/agent.py", line 76, in parallel_research
+    company = cf.result()
+              ^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.11/3.11.14_3/Frameworks/Python.framework/Versions/3.11/lib/python3.11/concurrent/futures/_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.11/3.11.14_3/Frameworks/Python.framework/Versions/3.11/lib/python3.11/concurrent/futures/_base.py", line 401, in __get_result
+    raise self._exception
+  File "/opt/homebrew/Cellar/python@3.11/3.11.14_3/Frameworks/Python.framework/Versions/3.11/lib/python3.11/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/yubin/playground/skala_playground2/battery_market_analysis/agents/supervisor/agent.py", line 56, in _run_company
+    result = agent.run({})
+             ^^^^^^^^^^^^^
+  File "/Users/yubin/playground/skala_playground2/battery_market_analysis/agents/base.py", line 256, in run
+    action_result = self.act(thought)
+                    ^^^^^^^^^^^^^^^^^
+  File "/Users/yubin/playground/skala_playground2/battery_market_analysis/agents/company_research/agent.py", line 91, in act
+    llm_json = self.call_llm(
+               ^^^^^^^^^^^^^^
+  File "/Users/yubin/playground/skala_playground2/battery_market_analysis/agents/base.py", line 134, in call_llm
+    response = self.llm.invoke(
+               ^^^^^^^^^^^^^^^^
+  File "/Users/yubin/playground/skala_playground2/battery_market_analysis/shared/llm_client.py", line 78, in invoke
+    response = self.client.chat.completions.create(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/yubin/playground/skala_playground2/battery_market_analysis/.venv/lib/python3.11/site-packages/openai/_utils/_utils.py", line 271, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/yubin/playground/skala_playground2/battery_market_analysis/.venv/lib/python3.11/site-packages/openai/resources/chat/completions.py", line 659, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Users/yubin/playground/skala_playground2/battery_market_analysis/.venv/lib/python3.11/site-packages/openai/_base_client.py", line 1180, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/yubin/playground/skala_playground2/battery_market_analysis/.venv/lib/python3.11/site-packages/openai/_base_client.py", line 869, in request
+    return self._request(
+           ^^^^^^^^^^^^^^
+  File "/Users/yubin/playground/skala_playground2/battery_market_analysis/.venv/lib/python3.11/site-packages/openai/_base_client.py", line 960, in _request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': "This model's maximum context length is 8192 tokens. However, you requested 8526 tokens (7026 in the messages, 1500 in the completion). Please reduce the length of the messages or completion.", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}
+During task with name 'parallel_research' and id 'd9a4e8e1-dd9a-1556-4cfb-9d234df44dcd'
+2026-04-07 17:54:07 - __main__ - INFO - ============================================================
+2026-04-07 17:54:07 - __main__ - INFO - Battery Analysis: Supervisor -> Markdown -> PDF
+2026-04-07 17:54:07 - __main__ - INFO - ============================================================
+2026-04-07 17:54:07 - retrieval.retriever - INFO - Initializing embedder with model: BAAI/bge-m3
+2026-04-07 17:54:07 - retrieval.embedder - INFO - Loading embedding model: BAAI/bge-m3
+2026-04-07 17:54:11 - retrieval.embedder - INFO - Model loaded successfully on device: cpu
+2026-04-07 17:54:11 - retrieval.retriever - INFO - Embedder initialized successfully
+2026-04-07 17:54:12 - retrieval.retriever - INFO - Chroma initialized at /Users/yubin/playground/skala_playground2/battery_market_analysis/data/vector_store (collection=battery_documents, count=438)
+2026-04-07 17:54:12 - agents.supervisor.agent - INFO - [SupervisorAgent] workflow START
+2026-04-07 17:54:12 - agents.supervisor.agent - INFO - [supervisor] parallel_research START
+2026-04-07 17:54:12 - shared.llm_client - INFO - LLM Client initialized with model: gpt-4o
+2026-04-07 17:54:12 - CompanyResearchAgent - INFO - LLM client auto-initialized for CompanyResearchAgent
+2026-04-07 17:54:12 - CompanyResearchAgent - INFO - =[CompanyResearchAgent]= Agent starting...
+2026-04-07 17:54:12 - CompanyResearchAgent - INFO -   → Think phase...
+2026-04-07 17:54:12 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 현재 사업 포트폴리오 현황 제품 고객 지역 (top_k=5)
+2026-04-07 17:54:12 - shared.llm_client - INFO - LLM Client initialized with model: gpt-4o
+2026-04-07 17:54:12 - MarketResearchAgent - INFO - LLM client auto-initialized for MarketResearchAgent
+2026-04-07 17:54:12 - MarketResearchAgent - INFO - =[MarketResearchAgent]= Agent starting...
+2026-04-07 17:54:12 - MarketResearchAgent - INFO -   → Think phase...
+2026-04-07 17:54:12 - MarketResearchAgent - INFO - Thinking: Searching market documents (RAG + Web)...
+2026-04-07 17:54:12 - retrieval.retriever - INFO - Searching for: 글로벌 EV 시장 캐즘 보조금 감소 (top_k=5)
+2026-04-07 17:54:15 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:54:15 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:54:15 - MarketResearchAgent - INFO - Vector search - 글로벌 EV 시장 캐즘 보조금 감소: 5 results
+2026-04-07 17:54:16 - MarketResearchAgent - INFO - Web search - 글로벌 EV 시장 캐즘 보조금 감소: 5 results
+2026-04-07 17:54:16 - MarketResearchAgent - INFO - Combined - 글로벌 EV 시장 캐즘 보조금 감소: 6 unique results
+2026-04-07 17:54:16 - retrieval.retriever - INFO - Searching for: 배터리 수요 구조 변화 가격 압력 (top_k=5)
+2026-04-07 17:54:16 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 시장 환경 변화 대응 전략 EV 캐즘 대응 (top_k=5)
+2026-04-07 17:54:16 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:54:16 - MarketResearchAgent - INFO - Vector search - 배터리 수요 구조 변화 가격 압력: 5 results
+2026-04-07 17:54:16 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:54:18 - MarketResearchAgent - INFO - Web search - 배터리 수요 구조 변화 가격 압력: 5 results
+2026-04-07 17:54:18 - MarketResearchAgent - INFO - Combined - 배터리 수요 구조 변화 가격 압력: 7 unique results
+2026-04-07 17:54:18 - retrieval.retriever - INFO - Searching for: 배터리 관세 정책 규제 (top_k=5)
+2026-04-07 17:54:18 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:54:18 - MarketResearchAgent - INFO - Vector search - 배터리 관세 정책 규제: 5 results
+2026-04-07 17:54:19 - MarketResearchAgent - INFO - Web search - 배터리 관세 정책 규제: 5 results
+2026-04-07 17:54:19 - MarketResearchAgent - INFO - Combined - 배터리 관세 정책 규제: 6 unique results
+2026-04-07 17:54:19 - retrieval.retriever - INFO - Searching for: 배터리 공급망 원자재 물류 (top_k=5)
+2026-04-07 17:54:19 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:54:19 - MarketResearchAgent - INFO - Vector search - 배터리 공급망 원자재 물류: 5 results
+2026-04-07 17:54:20 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 다각화 전략 방향 (top_k=5)
+2026-04-07 17:54:20 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:54:20 - MarketResearchAgent - INFO - Web search - 배터리 공급망 원자재 물류: 5 results
+2026-04-07 17:54:20 - MarketResearchAgent - INFO - Combined - 배터리 공급망 원자재 물류: 7 unique results
+2026-04-07 17:54:20 - retrieval.retriever - INFO - Searching for: 차세대 배터리 기술 경쟁 (top_k=5)
+2026-04-07 17:54:20 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:54:20 - MarketResearchAgent - INFO - Vector search - 차세대 배터리 기술 경쟁: 5 results
+2026-04-07 17:54:21 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 핵심 경쟁력 (top_k=5)
+2026-04-07 17:54:22 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:54:22 - MarketResearchAgent - INFO - Web search - 차세대 배터리 기술 경쟁: 5 results
+2026-04-07 17:54:22 - MarketResearchAgent - INFO - Combined - 차세대 배터리 기술 경쟁: 7 unique results
+2026-04-07 17:54:22 - MarketResearchAgent - INFO - Final results: 15 items from all searches
+2026-04-07 17:54:22 - MarketResearchAgent - INFO -   → Act phase...
+2026-04-07 17:54:22 - MarketResearchAgent - INFO - Acting: Generating market analysis with evaluation cycle...
+2026-04-07 17:54:23 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 수익성 구조 및 전략 (top_k=5)
+2026-04-07 17:54:23 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:54:24 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 주요 리스크 및 과제 (top_k=5)
+2026-04-07 17:54:24 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:54:26 - retrieval.retriever - INFO - Searching for: CATL 현재 사업 포트폴리오 현황 제품 고객 지역 (top_k=5)
+2026-04-07 17:54:26 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:54:27 - retrieval.retriever - INFO - Searching for: CATL 시장 환경 변화 대응 전략 EV 캐즘 대응 (top_k=5)
+2026-04-07 17:54:27 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:54:29 - retrieval.retriever - INFO - Searching for: CATL 다각화 전략 방향 (top_k=5)
+2026-04-07 17:54:29 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:54:30 - shared.llm_client - INFO - LLM response received (1274 chars)
+2026-04-07 17:54:30 - MarketResearchAgent - INFO - Generated initial draft
+2026-04-07 17:54:30 - retrieval.retriever - INFO - Searching for: CATL 핵심 경쟁력 (top_k=5)
+2026-04-07 17:54:30 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:54:31 - retrieval.retriever - INFO - Searching for: CATL 수익성 구조 및 전략 (top_k=5)
+2026-04-07 17:54:32 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:54:33 - retrieval.retriever - INFO - Searching for: CATL 주요 리스크 및 과제 (top_k=5)
+2026-04-07 17:54:33 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 17:54:33 - shared.llm_client - INFO - LLM response received (396 chars)
+2026-04-07 17:54:33 - MarketResearchAgent - INFO - Evaluation: 100/100 (Pass: True)
+2026-04-07 17:54:33 - MarketResearchAgent - INFO -   → Output phase...
+2026-04-07 17:54:33 - MarketResearchAgent - INFO - Output: Preparing final result with metadata...
+2026-04-07 17:54:33 - MarketResearchAgent - INFO - Output prepared: Score 100/100, Pass: True
+2026-04-07 17:54:33 - agents.market_research.visualizer - INFO - MarketResearchVisualizer initialized: visualization
+2026-04-07 17:54:33 - agents.market_research.visualizer - INFO - Starting market research visualization generation (Top 2 charts)...
+2026-04-07 17:54:33 - agents.market_research.visualizer - INFO -   → Generating Executive Summary...
+2026-04-07 17:54:33 - agents.market_research.visualizer - WARNING - Executive summary generation failed: Cannot create a GUI FigureManager outside the main thread using the MacOS backend. Use a non-interactive backend like 'agg' to make plots on worker threads.
+2026-04-07 17:54:33 - agents.market_research.visualizer - INFO -   → Generating Supply Chain Risk Map...
+2026-04-07 17:54:33 - agents.market_research.visualizer - WARNING - Supply chain risk map generation failed: Cannot create a GUI FigureManager outside the main thread using the MacOS backend. Use a non-interactive backend like 'agg' to make plots on worker threads.
+2026-04-07 17:54:33 - agents.market_research.visualizer - INFO - ✓ Generated 0 visualization files (Top 2 priority)
+2026-04-07 17:54:33 - MarketResearchAgent - INFO - Generated 0 market visualization files
+2026-04-07 17:54:33 - MarketResearchAgent - INFO - =[MarketResearchAgent]= Agent completed successfully ✓
+2026-04-07 17:54:33 - agents.supervisor.agent - INFO - [market_research] done (len=1274)
+2026-04-07 17:54:35 - CompanyResearchAgent - INFO -   → Act phase...
+2026-04-07 17:54:42 - shared.llm_client - INFO - LLM JSON response received
+2026-04-07 17:55:02 - shared.llm_client - INFO - LLM JSON response received
+2026-04-07 17:55:02 - CompanyResearchAgent - INFO -   → Output phase...
+2026-04-07 17:55:02 - CompanyResearchAgent - INFO - =[CompanyResearchAgent]= Agent completed successfully ✓
+2026-04-07 17:55:02 - agents.supervisor.agent - INFO - [company_research] done (lg=2356, catl=2405)
+2026-04-07 17:55:02 - agents.supervisor.agent - INFO - [supervisor] parallel_research DONE
+2026-04-07 17:55:02 - agents.supervisor.agent - INFO - [supervisor] eval_research market=True company=True (retries m=0 c=0)
+2026-04-07 17:55:02 - agents.supervisor.agent - INFO - [supervisor] run_swot START
+2026-04-07 17:55:02 - shared.llm_client - INFO - LLM Client initialized with model: gpt-4o
+2026-04-07 17:55:02 - SWOTAnalysisAgent - INFO - LLM client auto-initialized for SWOTAnalysisAgent
+2026-04-07 17:55:02 - SWOTAnalysisAgent - INFO - =[SWOTAnalysisAgent]= Agent starting...
+2026-04-07 17:55:02 - SWOTAnalysisAgent - INFO -   → Think phase...
+2026-04-07 17:55:02 - SWOTAnalysisAgent - INFO - Thinking phase: preparing SWOT context...
+2026-04-07 17:55:02 - SWOTAnalysisAgent - INFO -   → Act phase...
+2026-04-07 17:55:15 - shared.llm_client - INFO - LLM response received (2471 chars)
+2026-04-07 17:55:18 - shared.llm_client - INFO - LLM response received (425 chars)
+2026-04-07 17:55:18 - SWOTAnalysisAgent - INFO - SWOT 평가 attempt=1 | TSR=0.917 | Fact=0.900 | Specificity=0.850 | Pass=True
+2026-04-07 17:55:18 - SWOTAnalysisAgent - INFO -   → Output phase...
+2026-04-07 17:55:18 - SWOTAnalysisAgent - INFO - Output phase: formatting SWOT analysis results...
+2026-04-07 17:55:18 - SWOTAnalysisAgent - INFO - SWOT 결과:
+| 구분 | 내용 |
+| --- | --- |
+| 강점 (S) | LG에너지솔루션은 다양한 제품 포트폴리오를 통해 비-전기차 사업을 확장하고 있으며, 북미 시장에서 LFP ESS 제품의 현지 생산을 통해 경쟁 우위를 확보하고 있다.<br>지속 가능한 성장을 위한 ESG 경영을 강화하고 있으며, RE 100 전환 등 친환경 목표를 설정하여 환경 규제를 준수하고 있다. |
+| 약점 (W) | 고객사와의 협의가 지속 중이며, CO2 규제 등 외부 요인으로 인한 불확실성이 존재한다.<br>초기 비용 부담이 존재하며, 고수익 파우치 판매 물량 감소를 보완해야 하는 과제가 있다. |
+| 기회 (O) | AI 데이터센터 확산에 따른 전력 수요 증가가 긍정적인 요소로 작용하고 있으며, 전력망용 ESS 배터리 컨테이너 제품과 클라우드 기반 소프트웨어를 통해 시장의 다양한 요구에 부응하고 있다.<br>미국 주택용 ESS 시장 공략과 중국 업체와의 협력 강화로 공급망 다각화를 추진하고 있다. |
+| 위협 (T) | 중동 지정학적 리스크와 글로벌 증시의 불안정성으로 인한 위협이 존재한다.<br>전기차 수요 둔화와 유럽 및 미국의 친환경 정책 변화로 인한 업황 위축 우려가 있다. |
+2026-04-07 17:55:18 - SWOTAnalysisAgent - INFO - SWOT 결과:
+| 구분 | 내용 |
+| --- | --- |
+| 강점 (S) | CATL은 전기차용 리튬이온 배터리 시장에서 약 60%의 점유율을 차지하며, 매출과 수익성에서 경쟁사들을 앞서고 있다.<br>연구개발 역량에서 한국 배터리 3사를 압도하며, 글로벌 배터리 시장에서의 구조적 격차를 확고히 하고 있다. |
+| 약점 (W) | 에너지 밀도 향상, 대규모 생산 시 품질 균일성 확보 등의 과제가 있으며, 다양한 전기차 플랫폼과의 호환성 문제를 해결해야 한다.<br>국제 표준화 및 안전성 인증을 확보하는 것도 중요한 과제로 남아 있다. |
+| 기회 (O) | 전고체 배터리 개발과 LFP 기술 리더십을 유지하며, 에너지 저장장치(ESS) 등 새로운 시장으로의 진출을 모색하고 있다.<br>중국 내 여러 지역에서 리튬 및 인광석 채굴권을 확보하여 원자재 공급망을 강화하고 있다. |
+| 위협 (T) | 미국의 대중 관세 등 정책 변수가 단기적인 리스크로 작용하고 있으며, 글로벌 시장 확장에 있어서 국제 표준화와 안전성 인증의 확보가 필요하다.<br>원재료 수급의 불확실성과 물류 리스크가 존재하며, 리튬과 코발트의 안정적인 공급을 확보하는 것이 중요하다. |
+2026-04-07 17:55:18 - SWOTAnalysisAgent - INFO - SWOT 결과:
+| 구분 | LG에너지솔루션 | CATL | 전략적 시사점 (비교 평가) |
+| --- | --- | --- | --- |
+| 강점(S) - 내부 경쟁력 | 다양한 제품 포트폴리오와 ESG 경영 강화 | 전기차 배터리 시장 점유율과 높은 매출 | 우위 기업: CATL. 근거: CATL은 전기차 배터리 시장에서 약 60% 점유율을 차지하고 있으며, 매출과 수익성 면에서 경쟁사를 압도한다. LG는 다양한 제품 포트폴리오와 ESG 경영 강화로 경쟁력을 유지하고 있지만, 전기차 시장에서의 점유율은 CATL에 비해 낮다. 시사점: LG는 전기차 시장 점유율 확대를 위한 전략적 파트너십을 강화해야 한다. |
+| 약점(W) - 내부 취약점 | 고객사 협의 지속 및 초기 비용 부담 | 에너지 밀도 향상 및 국제 표준화 과제 | 우위/열위 판단: 정보 부족. 근거: LG는 초기 비용 부담과 고객사 협의 지속의 불확실성이 있으며, CATL은 에너지 밀도 향상과 국제 표준화 과제가 있다. 시사점: 양사는 각각의 약점을 보완하기 위해 R&D 및 고객 관계 관리를 강화해야 한다. |
+| 기회(O) - 외부 시장 | AI 데이터센터 확산에 따른 전력 수요 증가 | 전고체 배터리 및 ESS 시장 진출 | 우위/열위 판단: 정보 부족. 근거: LG는 AI 데이터센터 확산에 따른 기회를, CATL은 전고체 배터리 및 ESS 시장 진출을 기회로 삼고 있다. 시사점: 두 기업 모두 기술 혁신을 통해 새로운 시장 기회를 적극적으로 잡아야 한다. |
+| 위협(T) - 외부 리스크 | 지정학적 리스크 및 정책 변화 | 미국의 대중 관세 및 원재료 수급 불확실성 | 우위/열위 판단: 정보 부족. 근거: LG는 지정학적 리스크와 친환경 정책 변화로 인한 위협이 있으며, CATL은 미국의 대중 관세와 원재료 수급의 불확실성이 있다. 시사점: 양사는 글로벌 정책 변화에 대한 대응 전략을 강화하고, 공급망 리스크를 최소화하기 위한 다각화 전략을 추진해야 한다. |
+2026-04-07 17:55:18 - SWOTAnalysisAgent - INFO - =[SWOTAnalysisAgent]= Agent completed successfully ✓
+2026-04-07 17:55:18 - agents.supervisor.agent - INFO - [supervisor] run_swot DONE (len=2226)
+2026-04-07 17:55:18 - agents.supervisor.agent - INFO - [supervisor] eval_swot approved=True (retries=0)
+2026-04-07 17:55:18 - agents.supervisor.agent - INFO - [supervisor] run_report START
+2026-04-07 17:55:18 - shared.llm_client - INFO - LLM Client initialized with model: gpt-4o
+2026-04-07 17:55:18 - ReportWriterAgent - INFO - LLM client auto-initialized for ReportWriterAgent
+2026-04-07 17:55:18 - ReportWriterAgent - INFO - =[ReportWriterAgent]= Agent starting...
+2026-04-07 17:55:18 - ReportWriterAgent - INFO -   → Think phase...
+2026-04-07 17:55:18 - ReportWriterAgent - INFO - Thinking phase: preparing report components...
+2026-04-07 17:55:18 - ReportWriterAgent - INFO -   → Act phase...
+2026-04-07 17:55:18 - ReportWriterAgent - INFO - Acting phase: composing final report sections...
+2026-04-07 17:55:42 - shared.llm_client - INFO - LLM JSON response received
+2026-04-07 17:55:42 - ReportWriterAgent - INFO -   → Output phase...
+2026-04-07 17:55:42 - ReportWriterAgent - INFO - Output phase: converting report to markdown...
+2026-04-07 17:55:42 - ReportWriterAgent - INFO - =[ReportWriterAgent]= Agent completed successfully ✓
+2026-04-07 17:55:42 - agents.supervisor.agent - INFO - [supervisor] run_report DONE (len=5239)
+2026-04-07 17:55:42 - agents.supervisor.agent - INFO - [supervisor] eval_report approved=True (retries=0)
+2026-04-07 17:55:42 - agents.supervisor.agent - INFO - [SupervisorAgent] workflow DONE (report len=5239)
+2026-04-07 17:55:42 - agents.supervisor.agent - INFO - [SupervisorAgent] report saved → /Users/yubin/playground/skala_playground2/battery_market_analysis/outputs/reports_md/battery_report_20260407_175542.md
+2026-04-07 17:55:42 - __main__ - INFO - Markdown report saved by supervisor (save=True)
+2026-04-07 17:55:42 - __main__ - INFO - Found 4 visualization PNG files
+2026-04-07 17:55:43 - __main__ - INFO - PDF report saved -> /Users/yubin/playground/skala_playground2/battery_market_analysis/outputs/reports_pdf/battery_report_20260407_175542.pdf
+2026-04-07 17:55:43 - __main__ - INFO - Pipeline completed successfully
