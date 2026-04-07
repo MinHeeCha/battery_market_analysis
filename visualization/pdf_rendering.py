@@ -1,12 +1,8 @@
-"""
-Structured PDF renderer for battery strategy reports.
+"""Structured PDF renderer for battery strategy reports.
 
-Improved for:
-- stable Korean font rendering using local webfont files (TTF/OTF)
-- readable editorial hierarchy
-- no overlapping hero text
-- regular-weight body text
-- safer summary numbering / reference layout
+This renderer prioritizes readable editorial layouts over plain markdown dumping.
+It turns the report into a small set of designed A4 pages: cover/summary, market,
+company analysis, comparative SWOT, and references.
 """
 
 from __future__ import annotations
@@ -14,7 +10,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, List, Optional, Sequence, Tuple
+from typing import Dict, Iterable, List, Optional, Sequence, Tuple
 from xml.sax.saxutils import escape
 
 from reportlab.lib import colors
@@ -75,7 +71,7 @@ class ParsedReport:
 
 
 class GradientHero(Flowable):
-    """Top hero/section intro panel with stable typography."""
+    """Top hero/section intro panel with gradient and wave overlay."""
 
     def __init__(
         self,
@@ -112,48 +108,25 @@ class GradientHero(Flowable):
 
         self.renderer._draw_gradient_rect(c, 0, 0, w, h, palette)
 
-        # Left dark overlay for contrast
-        overlay_w = min(w * 0.48, 120 * mm)
-        c.setFillColor(colors.Color(t.deep_red.red, t.deep_red.green, t.deep_red.blue, alpha=0.38))
-        c.rect(0, 0, overlay_w, h, stroke=0, fill=1)
-
-        self.renderer._draw_wave_overlay(c, w, h)
-
         c.setFillColor(t.white)
-        font_name = self.renderer._font(True)
-
-        left = 18
-        top = h - 18
-        text_width = min(w * 0.42, 105 * mm)
-
-        if h >= 70 * mm:
-            label_size = 10
-            title_size = self.renderer._fit_font_size(self.title, font_name, 40, 24, text_width)
-            subtitle_size = 11
-            title_gap = 20
-            subtitle_gap = 14
-        else:
-            label_size = 9
-            title_size = self.renderer._fit_font_size(self.title, font_name, 24, 18, text_width)
-            subtitle_size = 10
-            title_gap = 14
-            subtitle_gap = 12
+        label_font = self.renderer._font(True)
+        max_text_width = w - 36
 
         if self.label:
-            c.setFont(font_name, label_size)
-            c.drawString(left, top, self.label)
+            label_size = self.renderer._fit_font_size(self.label, label_font, 10.5, 8.5, max_text_width)
+            self.renderer._draw_heavy_text(c, 18, h - 22, self.label, label_font, label_size, t.white, copies=2)
 
-        c.setFont(font_name, title_size)
-        title_y = top - label_size - title_gap
-        c.drawString(left, title_y, self.title)
+        title_max = 42 if len(self.title) <= 14 else 30
+        title_size = self.renderer._fit_font_size(self.title, label_font, title_max, 24, max_text_width)
+        title_y = h - 26 - label_size - title_size
+        self.renderer._draw_heavy_text(c, 18, title_y, self.title, label_font, title_size, t.white, copies=3)
 
-        c.setFont(self.renderer._font(False), subtitle_size)
-        subtitle_y = max(12, title_y - subtitle_gap)
-        c.drawString(left, subtitle_y, self.subtitle)
+        subtitle_size = self.renderer._fit_font_size(self.subtitle, label_font, 12, 9.5, max_text_width)
+        self.renderer._draw_heavy_text(c, 18, 18, self.subtitle, label_font, subtitle_size, t.white, copies=2)
 
 
 class ChartPlaceholder(Flowable):
-    """Simple chart placeholder panel."""
+    """Simple vector chart panel used to reserve strong chart structure on the page."""
 
     def __init__(
         self,
@@ -183,7 +156,7 @@ class ChartPlaceholder(Flowable):
         w = self.width
         h = self.height
 
-        c.setFillColor(t.white)
+        c.setFillColor(t.off_white)
         c.setStrokeColor(t.light_gray)
         c.setLineWidth(0.7)
         c.rect(0, 0, w, h, stroke=1, fill=1)
@@ -194,7 +167,6 @@ class ChartPlaceholder(Flowable):
         c.setFillColor(t.dark_charcoal)
         c.setFont(self.renderer._font(True), 11)
         c.drawString(14, h - 20, self.title)
-
         c.setFillColor(t.medium_gray)
         c.setFont(self.renderer._font(False), 7.5)
         c.drawString(14, 12, self.caption[:110])
@@ -227,7 +199,6 @@ class ChartPlaceholder(Flowable):
         c.setLineWidth(2.2)
         for idx in range(len(pts) - 1):
             c.line(pts[idx][0], pts[idx][1], pts[idx + 1][0], pts[idx + 1][1])
-
         c.setFillColor(self.accent)
         for px, py in pts:
             c.circle(px, py, 2.7, stroke=0, fill=1)
@@ -291,42 +262,29 @@ class BatteryReportPDFRenderer:
         return output_path
 
     def _register_fonts(self) -> None:
-        """
-        Prefer local downloaded webfont files:
-        assets/fonts/NotoSansKR-Regular.ttf
-        assets/fonts/NotoSansKR-Bold.ttf
-        """
-        project_root = Path.cwd()
-
         regular_candidates = [
-            project_root / "assets/fonts/NotoSansKR-Regular.ttf",
-            project_root / "assets/fonts/NotoSansKR-Regular.otf",
-            Path("/System/Library/Fonts/Supplemental/NotoSansKR-Regular.otf"),
-            Path("/Library/Fonts/NotoSansKR-Regular.otf"),
-            Path("/System/Library/Fonts/Supplemental/AppleGothic.ttf"),
+            "/System/Library/Fonts/Supplemental/NotoSansGothic-Regular.ttf",
+            "/System/Library/Fonts/Supplemental/NotoSansKR-Regular.otf",
+            "/Library/Fonts/NotoSansKR-Regular.otf",
+            "/System/Library/Fonts/Supplemental/Apple SD Gothic Neo.ttc",
+            "/System/Library/Fonts/Supplemental/AppleGothic.ttf",
         ]
         bold_candidates = [
-            project_root / "assets/fonts/NotoSansKR-Bold.ttf",
-            project_root / "assets/fonts/NotoSansKR-Bold.otf",
-            Path("/System/Library/Fonts/Supplemental/NotoSansKR-Bold.otf"),
-            Path("/Library/Fonts/NotoSansKR-Bold.otf"),
-            Path("/System/Library/Fonts/Supplemental/AppleGothic.ttf"),
+            "/System/Library/Fonts/Supplemental/NotoSansKR-Bold.otf",
+            "/Library/Fonts/NotoSansKR-Bold.otf",
+            "/System/Library/Fonts/Supplemental/Apple SD Gothic Neo Bold.ttf",
+            "/System/Library/Fonts/Supplemental/AppleGothic.ttf",
         ]
-
         self._register_font_family("NotoSansKR", regular_candidates)
         self._register_font_family("NotoSansKR-Bold", bold_candidates)
 
-    def _register_font_family(self, name: str, candidates: Sequence[Path]) -> None:
+    def _register_font_family(self, name: str, candidates: Sequence[str]) -> None:
         if name in pdfmetrics.getRegisteredFontNames():
             return
-
         for path in candidates:
-            try:
-                if path.exists():
-                    pdfmetrics.registerFont(TTFont(name, str(path)))
-                    return
-            except Exception:
-                continue
+            if Path(path).exists():
+                pdfmetrics.registerFont(TTFont(name, path))
+                return
 
     def _font(self, bold: bool = False, display: bool = False) -> str:
         if bold and "NotoSansKR-Bold" in pdfmetrics.getRegisteredFontNames():
@@ -359,8 +317,8 @@ class BatteryReportPDFRenderer:
                 name="RedSubTitle",
                 parent=styles["Heading2"],
                 fontName=self._font(True),
-                fontSize=15,
-                leading=19,
+                fontSize=13,
+                leading=17,
                 textColor=t.primary_red,
                 alignment=TA_LEFT,
                 spaceAfter=6,
@@ -370,9 +328,9 @@ class BatteryReportPDFRenderer:
             ParagraphStyle(
                 name="Body",
                 parent=styles["BodyText"],
-                fontName=self._font(False),
+                fontName=self._font(True),
                 fontSize=9.5,
-                leading=16.6,
+                leading=13.2,
                 textColor=t.dark_charcoal,
                 alignment=TA_LEFT,
                 spaceAfter=12,
@@ -382,9 +340,9 @@ class BatteryReportPDFRenderer:
             ParagraphStyle(
                 name="BodyMuted",
                 parent=styles["BodyText"],
-                fontName=self._font(False),
+                fontName=self._font(True),
                 fontSize=8.6,
-                leading=14.2,
+                leading=11.6,
                 textColor=t.medium_gray,
                 alignment=TA_LEFT,
                 spaceAfter=10,
@@ -394,7 +352,7 @@ class BatteryReportPDFRenderer:
             ParagraphStyle(
                 name="Caption",
                 parent=styles["BodyText"],
-                fontName=self._font(False),
+                fontName=self._font(True),
                 fontSize=7.5,
                 leading=10,
                 textColor=t.medium_gray,
@@ -411,18 +369,6 @@ class BatteryReportPDFRenderer:
                 textColor=t.medium_gray,
                 alignment=TA_LEFT,
                 spaceAfter=4,
-            )
-        )
-        add(
-            ParagraphStyle(
-                name="IndexLabel",
-                parent=styles["BodyText"],
-                fontName=self._font(False),
-                fontSize=9,
-                leading=10,
-                textColor=t.medium_gray,
-                alignment=TA_CENTER,
-                spaceAfter=0,
             )
         )
         add(
@@ -451,7 +397,7 @@ class BatteryReportPDFRenderer:
             ParagraphStyle(
                 name="KPIDescription",
                 parent=styles["BodyText"],
-                fontName=self._font(False),
+                fontName=self._font(True),
                 fontSize=8.2,
                 leading=11,
                 textColor=t.medium_gray,
@@ -462,9 +408,9 @@ class BatteryReportPDFRenderer:
             ParagraphStyle(
                 name="Reference",
                 parent=styles["BodyText"],
-                fontName=self._font(False),
+                fontName=self._font(True),
                 fontSize=7.8,
-                leading=10.6,
+                leading=9.6,
                 textColor=t.dark_charcoal,
                 alignment=TA_LEFT,
                 spaceAfter=6,
@@ -509,7 +455,6 @@ class BatteryReportPDFRenderer:
             "4. CATL 전략 분석": "catl",
             "5. 전략 비교 및 Comparative SWOT": "comparison",
             "6. 종합 시사점": "implications",
-            "7. REFERENCES": "references",
             "7. References": "references",
         }
 
@@ -571,10 +516,10 @@ class BatteryReportPDFRenderer:
             story.extend(self._build_market_page(report))
         if report.lges:
             story.append(PageBreak())
-            story.extend(self._build_company_page(company_name="LG에너지솔루션", blocks=report.lges))
+            story.extend(self._build_company_page(report, company_name="LG에너지솔루션", blocks=report.lges))
         if report.catl:
             story.append(PageBreak())
-            story.extend(self._build_company_page(company_name="CATL", blocks=report.catl))
+            story.extend(self._build_company_page(report, company_name="CATL", blocks=report.catl))
         if report.comparison or report.implications:
             story.append(PageBreak())
             story.extend(self._build_swot_page(report))
@@ -616,17 +561,16 @@ class BatteryReportPDFRenderer:
         )
         story.append(Spacer(1, 7 * mm))
         story.append(Paragraph("시장 배경", self.styles["PageTitle"]))
+        story.append(self._make_card_grid(report.market, columns=1, tone="content"))
 
-        market_cards = self._make_card_grid(report.market, columns=1, tone="content")
-        story.append(market_cards)
         return story
 
-    def _build_company_page(self, company_name: str, blocks: Sequence[ContentBlock]) -> List:
+    def _build_company_page(self, report: ParsedReport, company_name: str, blocks: Sequence[ContentBlock]) -> List:
         story: List = []
         story.append(
             GradientHero(
                 self,
-                title=company_name,
+                title=company_name if len(company_name) <= 10 else company_name[:9],
                 subtitle=f"{company_name} 전략 구조와 대응 방향",
                 label="COMPANY ANALYSIS",
                 height=35 * mm,
@@ -645,7 +589,7 @@ class BatteryReportPDFRenderer:
             GradientHero(
                 self,
                 title="SWOT",
-                subtitle="기업별 SWOT과 시사점",
+                subtitle="기업별 SWOT과 전략적 시사점 비교",
                 label="COMPARATIVE FRAME",
                 height=35 * mm,
             )
@@ -664,12 +608,7 @@ class BatteryReportPDFRenderer:
             ]],
             colWidths=[(self.content_width - 24) / 2, (self.content_width - 24) / 2],
         )
-        swot_table.setStyle(
-            TableStyle([
-                ("LEFTPADDING", (0, 0), (-1, -1), 0),
-                ("RIGHTPADDING", (0, 0), (-1, -1), 24),
-            ])
-        )
+        swot_table.setStyle(TableStyle([("LEFTPADDING", (0, 0), (-1, -1), 0), ("RIGHTPADDING", (0, 0), (-1, -1), 24)]))
         story.append(swot_table)
         story.append(Spacer(1, 6 * mm))
 
@@ -700,12 +639,12 @@ class BatteryReportPDFRenderer:
         for idx, ref in enumerate(report.references, start=1):
             rows.append(
                 [
-                    Paragraph(f"<para align='center'>{idx:02d}</para>", self.styles["IndexLabel"]),
+                    Paragraph(f"{idx:02d}", self.styles["CardKicker"]),
                     Paragraph(self._format_reference(ref), self.styles["Reference"]),
                 ]
             )
 
-        table = Table(rows, colWidths=[16 * mm, self.content_width - 16 * mm], repeatRows=0)
+        table = Table(rows, colWidths=[12 * mm, self.content_width - 12 * mm], repeatRows=0)
         table.setStyle(
             TableStyle(
                 [
@@ -725,6 +664,10 @@ class BatteryReportPDFRenderer:
 
     def _make_card_grid(self, blocks: Sequence[ContentBlock], columns: int, tone: str) -> Table:
         valid = [block for block in blocks if block.body]
+        if columns > 1:
+            longest = max((len(block.body) for block in valid), default=0)
+            if longest > 420:
+                columns = 1
         rows = []
         gutter = 24 if columns == 2 else 16
         col_width = (self.content_width - gutter * (columns - 1)) / columns
@@ -761,7 +704,7 @@ class BatteryReportPDFRenderer:
             fill = self.tokens.light_orange
             accent = self.tokens.orange
         else:
-            fill = self.tokens.white
+            fill = self.tokens.off_white
             accent = self.tokens.primary_red
 
         body_text = self._paragraphize(block.body)
@@ -782,6 +725,27 @@ class BatteryReportPDFRenderer:
                     ("TOPPADDING", (0, 0), (-1, -1), 20),
                     ("BOTTOMPADDING", (0, 0), (-1, -1), 18),
                     ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                ]
+            )
+        )
+        return table
+
+    def _callout_card(self, kicker: str, title: str, body: str, fill: colors.Color) -> Table:
+        data = [
+            [Paragraph(kicker, self.styles["CardKicker"])],
+            [Paragraph(self._escape(title), self.styles["RedSubTitle"])],
+            [Paragraph(self._paragraphize(body), self.styles["Body"])],
+        ]
+        table = Table(data, colWidths=[self.content_width])
+        table.setStyle(
+            TableStyle(
+                [
+                    ("BACKGROUND", (0, 0), (-1, -1), fill),
+                    ("LINEBEFORE", (0, 0), (0, -1), 2, self.tokens.primary_red),
+                    ("LEFTPADDING", (0, 0), (-1, -1), 24),
+                    ("RIGHTPADDING", (0, 0), (-1, -1), 24),
+                    ("TOPPADDING", (0, 0), (-1, -1), 20),
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), 18),
                 ]
             )
         )
@@ -843,12 +807,12 @@ class BatteryReportPDFRenderer:
     def _summary_box(self, blocks: Sequence[ContentBlock]) -> Table:
         rows: List[List[Paragraph]] = []
         for idx, block in enumerate(blocks, start=1):
-            label = Paragraph(f"<para align='center'>{idx:02d}</para>", self.styles["IndexLabel"])
+            label = Paragraph(f"{idx:02d}", self.styles["CardKicker"])
             title = Paragraph(self._escape(block.title), self.styles["RedSubTitle"])
             body = Paragraph(self._paragraphize(block.body), self.styles["Body"])
             rows.extend([[label, title], ["", body]])
 
-        table = Table(rows, colWidths=[16 * mm, self.content_width - 16 * mm])
+        table = Table(rows, colWidths=[12 * mm, self.content_width - 12 * mm])
         style = [
             ("BACKGROUND", (0, 0), (-1, -1), self.tokens.off_white),
             ("BOX", (0, 0), (-1, -1), 0.8, self.tokens.light_gray),
@@ -976,6 +940,29 @@ class BatteryReportPDFRenderer:
         parsed = {key: value.strip() for key, value in pattern.findall(text)}
         return parsed
 
+    def _extract_kpis(self, report: ParsedReport) -> List[Tuple[str, str]]:
+        joined = "\n".join(
+            [block.body for group in [report.summary, report.market, report.lges, report.catl] for block in group]
+        )
+        patterns = [
+            (r"(\d{2,4}(?:,\d{3})*\s*억\s*달러)", "시장 규모"),
+            (r"(\d+\s*%[\+\s]*(?:이상|증가|수준)?)", "성장/비중"),
+            (r"(\d{1,3}(?:,\d{3})*\s*개\s*이상)", "자산/특허"),
+            (r"(\d{1,3}(?:,\d{3})*\s*억\s*위안)", "매출 규모"),
+        ]
+        seen = set()
+        kpis: List[Tuple[str, str]] = []
+        for pattern, label in patterns:
+            for match in re.finditer(pattern, joined):
+                value = match.group(1).strip()
+                if value in seen:
+                    continue
+                seen.add(value)
+                kpis.append((value, label))
+                if len(kpis) >= 4:
+                    return kpis
+        return kpis
+
     def _split_kpi_value(self, value: str) -> Tuple[str, str]:
         tokens = value.split()
         if len(tokens) >= 2:
@@ -1008,8 +995,8 @@ class BatteryReportPDFRenderer:
 
     def _paragraphize(self, text: str) -> str:
         clean = self._escape(re.sub(r"\s+", " ", text).strip())
-        clean = clean.replace("• ", "<br/>• ")
-        clean = clean.replace("- ", "<br/>- ")
+        clean = clean.replace(". ", ".<br/><br/>")
+        clean = clean.replace("다. ", "다.<br/><br/>")
         return clean
 
     def _escape(self, text: str) -> str:
@@ -1019,8 +1006,7 @@ class BatteryReportPDFRenderer:
         return "#" + color.hexval().lower().replace("0x", "")
 
     def _draw_gradient_rect(self, canvas, x, y, width, height, palette: Sequence[colors.Color]) -> None:
-        # horizontal gradient
-        steps = 100
+        steps = 70
         for idx in range(steps):
             ratio = idx / max(steps - 1, 1)
             color = self._sample_gradient(palette, ratio)
@@ -1044,30 +1030,38 @@ class BatteryReportPDFRenderer:
         )
 
     def _draw_wave_overlay(self, canvas, width: float, height: float) -> None:
-        canvas.saveState()
-        canvas.setStrokeColor(colors.Color(1, 1, 1, alpha=0.12))
-        canvas.setLineWidth(18)
-        canvas.bezier(
-            width * 0.42, height * 0.12,
-            width * 0.60, height * 0.34,
-            width * 0.72, height * 0.08,
-            width * 0.98, height * 0.28,
-        )
-        canvas.setStrokeColor(colors.Color(1, 1, 1, alpha=0.08))
-        canvas.setLineWidth(10)
-        canvas.bezier(
-            width * 0.34, height * 0.66,
-            width * 0.52, height * 0.86,
-            width * 0.74, height * 0.58,
-            width * 0.98, height * 0.78,
-        )
-        canvas.restoreState()
+        return
 
     def _fit_font_size(self, text: str, font_name: str, max_size: float, min_size: float, max_width: float) -> float:
         size = max_size
         while size > min_size and pdfmetrics.stringWidth(text, font_name, size) > max_width:
             size -= 0.5
         return max(size, min_size)
+
+    def _draw_heavy_text(
+        self,
+        canvas,
+        x: float,
+        y: float,
+        text: str,
+        font_name: str,
+        font_size: float,
+        color: colors.Color,
+        copies: int = 2,
+    ) -> None:
+        canvas.saveState()
+        canvas.setFillColor(color)
+        canvas.setFont(font_name, font_size)
+        offsets = [(0, 0)]
+        if copies >= 2:
+            offsets.append((0.35, 0))
+        if copies >= 3:
+            offsets.append((0, 0.35))
+        if copies >= 4:
+            offsets.append((0.35, 0.35))
+        for dx, dy in offsets:
+            canvas.drawString(x + dx, y + dy, text)
+        canvas.restoreState()
 
     def _draw_cover_page_frame(self, canvas, doc) -> None:
         self._draw_page_background(canvas)
