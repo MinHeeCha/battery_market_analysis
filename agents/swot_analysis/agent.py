@@ -19,6 +19,8 @@ class SWOTAnalysisAgent(BaseAgent):
         self.threshold_task_success_rate = 0.8
         self.threshold_fact_accuracy = 0.7
         self.threshold_specificity = 0.6
+        self.threshold_evidence_grounding = 0.7
+        self.threshold_reasoning_quality = 0.7
         self._last_evaluation: Dict[str, Any] = {}
         self._last_retry_count: int = 0
     
@@ -57,7 +59,7 @@ class SWOTAnalysisAgent(BaseAgent):
     "opportunities": ["..."],
     "threats": ["..."]
   },
-  "comparative_swot": "두 기업의 상대적 경쟁우위/열위, 시사점을 포함한 비교 분석"
+  "comparative_swot": "| 구분 | A기업 | B기업 | 전략적 시사점 (비교 평가) | ... (4행 비교표)"
 }
 """
         prompt = f"{base_prompt}\n\n{json_schema_guide}"
@@ -99,11 +101,62 @@ class SWOTAnalysisAgent(BaseAgent):
                 "threats": ["글로벌 공급망 재편", "선진 기업의 기술 경쟁"],
             },
             "comparative_swot": (
-                "LG에너지솔루션은 기술/품질/글로벌 OEM 파트너십에서 우위를 보이지만 원가 부담이 상대적으로 높습니다. "
-                "반면 CATL은 비용 경쟁력과 대규모 생산능력에서 강점을 가지며 중저가 대중 시장 침투가 빠릅니다. "
-                "향후 경쟁은 고성능 세그먼트의 기술 리더십과 대중형 세그먼트의 원가 효율 경쟁으로 양분될 가능성이 큽니다."
+                "| 구분 | A기업 | B기업 | 전략적 시사점 (비교 평가) |\n"
+                "| --- | --- | --- | --- |\n"
+                "| 강점(S) - 내부 경쟁력 | LG에너지솔루션은 고성능 제품 포트폴리오와 글로벌 완성차 고객 신뢰를 기반으로 프리미엄 시장에서 경쟁력이 높습니다. | CATL은 대규모 생산과 원가 효율에서 우위를 확보해 대중형 시장 확장 속도가 빠릅니다. | 프리미엄 세그먼트는 LG가, 대중형 세그먼트는 CATL이 상대적 우위를 보이므로 세그먼트별 차별 전략이 필요합니다. |\n"
+                "| 약점(W) - 내부 취약점 | LG에너지솔루션은 상대적으로 높은 원가 구조가 가격 경쟁 국면에서 수익성 압박으로 이어질 수 있습니다. | CATL은 일부 지역에서 지정학 리스크와 글로벌 규제 환경 변화에 더 민감할 수 있습니다. | 단기적으로는 비용 구조 개선이, 중장기적으로는 지역 분산과 규제 대응 역량 강화가 가장 치명적 리스크 완화 포인트입니다. |\n"
+                "| 기회(O) - 외부 시장 | LG에너지솔루션은 고성능 EV 확대와 북미 현지 생산 수요 증가를 통해 고부가가치 계약을 늘릴 기회가 있습니다. | CATL은 신흥국 전동화 확산과 LFP 기반 보급형 플랫폼 확대에서 점유율을 빠르게 확대할 기회가 있습니다. | 시장이 고성능/대중형으로 이원화될수록 양사 모두 기회가 있으나, 공급망과 고객 맞춤형 제품 전개 속도가 선점 가능성을 좌우합니다. |\n"
+                "| 위협(T) - 외부 리스크 | LG에너지솔루션은 원자재 가격 변동과 경쟁사의 저가 공세가 마진을 잠식할 위험이 있습니다. | CATL은 정책 변화와 무역 규제 강화가 글로벌 확장 속도를 제약할 위험이 있습니다. | 외부 충격 방어력은 조달 다변화, 지역별 생산 포트폴리오, 고객 계약 구조의 안정성에서 결정되므로 리스크 헤지 체계가 핵심입니다. |"
             ),
         }
+
+    def _is_valid_comparative_table(self, text: str) -> bool:
+        """Check whether comparative_swot follows the required markdown table shape."""
+        if not text or "|" not in text:
+            return False
+        base_tokens = [
+            "구분",
+            "전략적 시사점 (비교 평가)",
+            "강점(S) - 내부 경쟁력",
+            "약점(W) - 내부 취약점",
+            "기회(O) - 외부 시장",
+            "위협(T) - 외부 리스크",
+        ]
+        has_company_columns = (
+            ("LG에너지솔루션" in text and "CATL" in text)
+            or ("A기업" in text and "B기업" in text)
+        )
+        return has_company_columns and all(token in text for token in base_tokens)
+
+    def _comparative_rows_have_evidence(self, text: str) -> bool:
+        """Check strategic implication cells include evidence and actionable implication."""
+        row_keys = [
+            "강점(S) - 내부 경쟁력",
+            "약점(W) - 내부 취약점",
+            "기회(O) - 외부 시장",
+            "위협(T) - 외부 리스크",
+        ]
+        lines = [line.strip() for line in text.splitlines() if line.strip().startswith("|")]
+        valid_rows = 0
+
+        for key in row_keys:
+            row_line = next((line for line in lines if key in line), "")
+            if not row_line:
+                continue
+            has_evidence_marker = ("근거:" in row_line) or ("근거" in row_line)
+            has_implication_marker = ("시사점:" in row_line) or ("시사점" in row_line)
+            has_substance = len(row_line) >= 80
+            if has_evidence_marker and has_implication_marker and has_substance:
+                valid_rows += 1
+
+        return valid_rows == 4
+
+    def _strength_row_mentions_advantage(self, text: str) -> bool:
+        """Check if strengths row explicitly mentions which company is superior."""
+        for line in text.splitlines():
+            if "강점(S) - 내부 경쟁력" in line:
+                return ("우위 기업" in line) or ("우위:" in line) or ("우위" in line and ("LG" in line or "CATL" in line))
+        return False
 
     def _normalize_swot_result(self, parsed: Dict[str, Any]) -> Dict[str, Any]:
         """Normalize and sanitize SWOT output structure."""
@@ -165,14 +218,26 @@ class SWOTAnalysisAgent(BaseAgent):
                 valid_quadrants += 1
 
         has_comparative_swot = bool(str(swot_result.get("comparative_swot", "")).strip())
+        comparative_text = str(swot_result.get("comparative_swot", ""))
+        comparative_table_valid = self._is_valid_comparative_table(comparative_text)
+        strength_advantage_mentioned = self._strength_row_mentions_advantage(comparative_text)
+        comparative_evidence_valid = self._comparative_rows_have_evidence(comparative_text)
         structure_score = valid_quadrants / 8.0
-        has_required_structure = (valid_quadrants == 8) and has_comparative_swot
+        has_required_structure = (
+            (valid_quadrants == 8)
+            and has_comparative_swot
+            and comparative_table_valid
+            and strength_advantage_mentioned
+            and comparative_evidence_valid
+        )
 
         # Default heuristic values (used when evaluator LLM is unavailable)
         swot_text = json.dumps(swot_result, ensure_ascii=False)
         fact_accuracy = 0.7 if len(swot_text) >= 600 else 0.5
         specificity = 0.6 if len(swot_result.get("comparative_swot", "")) >= 200 else 0.5
         fact_check_pass = fact_accuracy >= self.threshold_fact_accuracy
+        evidence_grounding = 0.7 if comparative_evidence_valid else 0.5
+        reasoning_quality = 0.7 if len(comparative_text) >= 350 else 0.5
         feedback = ""
 
         if self.llm:
@@ -191,6 +256,8 @@ class SWOTAnalysisAgent(BaseAgent):
 {{
   "fact_accuracy": 0.0~1.0,
   "specificity": 0.0~1.0,
+  "evidence_grounding": 0.0~1.0,
+  "reasoning_quality": 0.0~1.0,
   "fact_check_pass": true/false,
   "feedback": "개선사항"
 }}
@@ -206,6 +273,8 @@ SWOT 결과물:
                 parsed = self._extract_json(eval_response) or {}
                 fact_accuracy = float(parsed.get("fact_accuracy", fact_accuracy))
                 specificity = float(parsed.get("specificity", specificity))
+                evidence_grounding = float(parsed.get("evidence_grounding", evidence_grounding))
+                reasoning_quality = float(parsed.get("reasoning_quality", reasoning_quality))
                 fact_check_pass = bool(parsed.get("fact_check_pass", fact_check_pass))
                 feedback = str(parsed.get("feedback", "")).strip()
             except Exception as e:
@@ -214,12 +283,16 @@ SWOT 결과물:
         # Normalize score boundaries
         fact_accuracy = max(0.0, min(1.0, fact_accuracy))
         specificity = max(0.0, min(1.0, specificity))
+        evidence_grounding = max(0.0, min(1.0, evidence_grounding))
+        reasoning_quality = max(0.0, min(1.0, reasoning_quality))
 
         task_success_rate = round((structure_score + fact_accuracy + specificity) / 3, 4)
         passed = (
             task_success_rate >= self.threshold_task_success_rate
             and fact_accuracy >= self.threshold_fact_accuracy
             and specificity >= self.threshold_specificity
+            and evidence_grounding >= self.threshold_evidence_grounding
+            and reasoning_quality >= self.threshold_reasoning_quality
             and has_required_structure
             and fact_check_pass
         )
@@ -227,10 +300,15 @@ SWOT 결과물:
             "structure_score": structure_score,
             "valid_quadrants": valid_quadrants,
             "has_comparative_swot": has_comparative_swot,
+            "comparative_table_valid": comparative_table_valid,
+            "strength_advantage_mentioned": strength_advantage_mentioned,
+            "comparative_evidence_valid": comparative_evidence_valid,
             "has_required_structure": has_required_structure,
             "fact_accuracy": fact_accuracy,
             "fact_check_pass": fact_check_pass,
             "specificity": specificity,
+            "evidence_grounding": evidence_grounding,
+            "reasoning_quality": reasoning_quality,
             "task_success_rate": task_success_rate,
             "passed": passed,
             "feedback": feedback,
@@ -284,7 +362,7 @@ SWOT 결과물:
             if not feedback:
                 feedback = (
                     "점수 미달입니다. lg_swot/catl_swot/comparative_swot 구조를 유지하고, "
-                    "각 4분면 항목을 구체적으로 보강하세요."
+                    "각 4분면의 전략적 시사점 셀에 우위/열위 판단, 입력 기반 근거 2개 이상, 실행 시사점을 반드시 포함하세요."
                 )
 
         self._last_evaluation = best_eval
@@ -318,7 +396,7 @@ SWOT 결과물:
 
         lg_table = self._build_company_swot_markdown_table(lg_swot)
         catl_table = self._build_company_swot_markdown_table(catl_swot)
-        comparative_table = "\n".join(
+        comparative_table = comparative_text if comparative_text else "\n".join(
             [
                 "| 항목 | 내용 |",
                 "| --- | --- |",
@@ -349,7 +427,9 @@ SWOT 결과물:
         self.logger.info("Output phase: formatting SWOT analysis results...")
         passed = bool(self._last_evaluation.get("passed", False))
         markdown_tables = self._build_swot_markdown_output(action_result)
-
+        self.logger.info("SWOT 결과:\n%s", markdown_tables["lg_swot"])
+        self.logger.info("SWOT 결과:\n%s", markdown_tables["catl_swot"])
+        self.logger.info("SWOT 결과:\n%s", markdown_tables["comparative_swot"])
         return {
             "result": action_result,
             "markdown_tables": {
