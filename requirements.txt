@@ -1,6 +1,6 @@
 # Core dependencies
 python-dotenv==1.0.0
-pydantic==1.10.13
+pydantic>=2.0.0
 
 # LLM & AI
 langchain==0.1.0
@@ -16,7 +16,7 @@ numpy==1.24.4
 pandas==2.1.0
 
 # Vector Database
-chromadb==0.4.0
+chromadb>=1.5.0
 # pinecone-client==3.0.0  # optional
 
 # Document Processing

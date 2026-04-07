@@ -134,7 +134,13 @@ class MarketResearchAgent(BaseAgent):
         )
         
         self.logger.info(f"Output prepared: Score {output.external_relevance_score}/100, Pass: {output.pass_evaluation}")
-        return output.dict()
+        return {
+            "result": output.final_answer,
+            "passed": output.pass_evaluation,
+            "score": output.external_relevance_score,
+            "revision_count": output.revision_count,
+            "agent": "market_research",
+        }
     
     def _generate_initial_draft(self, context_str: str, search_context: str) -> str:
         """초안 생성"""

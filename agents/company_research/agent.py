@@ -5,7 +5,7 @@ from __future__ import annotations
 import os
 import re
 from collections import defaultdict
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import requests
 
@@ -314,8 +314,50 @@ class CompanyResearchAgent(BaseAgent):
 						title=item.get("title", "source"),
 						url=url,
 						source_type=item.get("source_type", "other"),
+						**self._extract_source_meta(item),
 					)
 		return list(source_map.values())[:10]
+
+	def _extract_source_meta(self, item: Dict[str, Any]) -> Dict[str, Any]:
+		"""URL·제목·메타데이터에서 연도, 저자/기관, 사이트명을 추출."""
+		from urllib.parse import urlparse
+
+		url = item.get("url", "")
+		title = item.get("title", "")
+		metadata = item.get("metadata", {})
+		blob = f"{title} {url}"
+
+		year_match = re.search(r"(20\d{2})", blob)
+		year = year_match.group(1) if year_match else None
+
+		site_name: Optional[str] = None
+		author: Optional[str] = None
+
+		if url.startswith("http"):
+			# 의미 있는 도메인 추출 (m., v., blog., www. 등 서브도메인 제거)
+			domain = urlparse(url).netloc.lower()
+			domain = re.sub(r"^(www\d?|m|v|blog|news|mobile)\.", "", domain)
+			parts = domain.split(".")
+			# .co.kr / .or.kr / .go.kr 등에서 SLD 추출
+			if len(parts) >= 3 and parts[-2] in ("co", "or", "go", "ac", "ne", "re"):
+				sld = parts[-3]
+			elif len(parts) >= 2:
+				sld = parts[-2]
+			else:
+				sld = parts[0]
+			site_name = sld.upper()
+
+			# 제목 끝 " - 기관명" / " | 기관명" 패턴으로 저자 추출
+			org_match = re.search(r"[-|–]\s*([^\-|–]{2,40})\s*$", title)
+			author = org_match.group(1).strip() if org_match else site_name
+
+		else:
+			# 로컬 PDF — 메타데이터 file_name 우선, 없으면 제목 정제
+			file_name = metadata.get("file_name", "") or title.replace(".pdf", "")
+			clean = re.sub(r"[-_]?\d{4}.*", "", file_name).replace("-", " ").replace("_", " ").strip()
+			author = clean.title() if clean else None
+
+		return {"year": year, "author": author, "site_name": site_name}
 
 	def _enforce_minimum_detail(
 		self,
@@ -420,10 +462,65 @@ class CompanyResearchAgent(BaseAgent):
 		]
 
 		if result.sources:
-			for src in result.sources:
-				lines.append(f"- {src.title} ({src.source_type}): {src.url}")
+			lines.extend(self._format_sources(result.sources))
 		else:
 			lines.append("- 출처 없음")
 
 		return "\n".join(lines).strip()
+
+	def _format_sources(self, sources: List[SourceItem]) -> List[str]:
+		"""출처를 관 보고서 / 학술 논문 / 웹페이지 3범주로 나눠 인용 형식으로 반환."""
+		OFFICIAL = {"official_report", "company_report", "policy_document"}
+		ACADEMIC = {"research_report"}
+		# news, other → 웹페이지
+
+		buckets: Dict[str, List[SourceItem]] = {
+			"관 보고서": [],
+			"학술 논문": [],
+			"웹페이지": [],
+		}
+		for src in sources:
+			if src.source_type in OFFICIAL:
+				buckets["관 보고서"].append(src)
+			elif src.source_type in ACADEMIC:
+				buckets["학술 논문"].append(src)
+			else:
+				buckets["웹페이지"].append(src)
+
+		lines: List[str] = []
+		for category, items in buckets.items():
+			if not items:
+				continue
+			lines.append(f"- {category}")
+			for src in items:
+				lines.append(f"    - {self._cite(src, category)}")
+		return lines
+
+	def _cite(self, src: SourceItem, category: str) -> str:
+		"""카테고리별 인용 포맷 생성."""
+		author = src.author or src.site_name or "Unknown"
+		year = src.year or "n.d."
+		title = src.title or ""
+
+		if category == "학술 논문":
+			journal_part = ""
+			if src.journal:
+				journal_part = f" *{src.journal}*"
+				if src.volume:
+					journal_part += f", {src.volume}"
+					if src.issue:
+						journal_part += f"({src.issue})"
+				if src.pages:
+					journal_part += f", {src.pages}"
+				journal_part += "."
+			return f"{author}({year}). {title}.{journal_part}"
+
+		if category == "웹페이지":
+			site = src.site_name or author
+			url_part = f" {src.url}" if src.url else ""
+			return f"{author}({year}). *{title}.* {site}.{url_part}"
+
+		# 관 보고서
+		url_part = f" {src.url}" if src.url else ""
+		return f"{author}({year}). *{title}.*{url_part}"
 

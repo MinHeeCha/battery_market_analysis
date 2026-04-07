@@ -351,12 +351,7 @@ SWOT 결과물:
         markdown_tables = self._build_swot_markdown_output(action_result)
 
         return {
-            "result": action_result,
-            "markdown_tables": {
-                "lg_swot": markdown_tables["lg_swot"],
-                "catl_swot": markdown_tables["catl_swot"],
-                "comparative_swot": markdown_tables["comparative_swot"],
-            },
+            "result": markdown_tables["full"],   # supervisor에 넘길 마크다운 문자열
             "agent": "swot_analysis",
             "status": "completed" if passed else "failed_quality_check",
             "quality_evaluation": self._last_evaluation,
