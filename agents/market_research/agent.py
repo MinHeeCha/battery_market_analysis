@@ -148,24 +148,13 @@ class MarketResearchAgent(BaseAgent):
         )
         
         try:
-            try:
-                response = self.llm.invoke_json(
-                    system_prompt=system_prompt,
-                    user_prompt=user_prompt,
-                    temperature=0.7,
-                    max_tokens=2500
-                )
-                if isinstance(response, dict) and "analysis" in response:
-                    return response["analysis"]
-                return str(response)
-            except Exception:
-                response = self.llm.invoke(
-                    system_prompt=system_prompt,
-                    user_prompt=user_prompt,
-                    temperature=0.7,
-                    max_tokens=2500
-                )
-                return response
+            response = self.llm.invoke(
+                system_prompt=system_prompt,
+                user_prompt=user_prompt,
+                temperature=0.7,
+                max_tokens=2500
+            )
+            return response
         except Exception as e:
             self.logger.error(f"Draft generation failed: {e}")
             return self._get_placeholder_analysis()
@@ -210,22 +199,13 @@ class MarketResearchAgent(BaseAgent):
         eval_prompt = MARKET_RESEARCH_EVALUATION_PROMPT_TEMPLATE.replace("{analysis}", analysis)
         
         try:
-            try:
-                response = self.llm.invoke_json(
-                    system_prompt="당신은 공정한 평가자입니다. 반드시 JSON 형식으로만 응답하시오.",
-                    user_prompt=eval_prompt,
-                    temperature=0.3,
-                    max_tokens=2000
-                )
-                return self._parse_evaluation_json(response)
-            except Exception:
-                response = self.llm.invoke(
-                    system_prompt="당신은 공정한 평가자입니다.",
-                    user_prompt=eval_prompt,
-                    temperature=0.3,
-                    max_tokens=2000
-                )
-                return self._parse_evaluation_text(response)
+            response = self.llm.invoke(
+                system_prompt="당신은 공정한 평가자입니다.",
+                user_prompt=eval_prompt,
+                temperature=0.3,
+                max_tokens=2000
+            )
+            return self._parse_evaluation_text(response)
         except Exception as e:
             self.logger.error(f"Evaluation failed: {e}")
             return self._get_placeholder_evaluation()
