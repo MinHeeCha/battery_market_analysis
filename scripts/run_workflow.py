@@ -1,124 +1,102 @@
 #!/usr/bin/env python3
+"""Run full supervisor workflow and generate markdown + PDF in one command.
+
+Usage:
+	python main.py
+	python main.py --no-save-md
 """
-Main workflow execution script - runs the complete agent pipeline
-"""
+
+from __future__ import annotations
+
+import argparse
 import sys
+from datetime import datetime
 from pathlib import Path
 
-# Add project root to path
-project_root = Path(__file__).parent.parent
-sys.path.insert(0, str(project_root))
 
-from config.settings import config
-from config.schema import ProjectState
-from shared.logger import get_logger
-from shared.utils import generate_execution_id
+ROOT = Path(__file__).resolve().parent
+sys.path.insert(0, str(ROOT))
+
 from agents.supervisor.agent import SupervisorAgent
-from agents.market_research.agent import MarketResearchAgent
-from agents.company_research.agent import CompanyResearchAgent
-from agents.swot_analysis.agent import SWOTAnalysisAgent
-from agents.report_writer.agent import ReportWriterAgent
 from retrieval.retriever import Retriever
-from validators.content_validators import (
-    MarketValidator, CompanyValidator, SWOTValidator, ReportValidator
-)
-from state.state_manager import StateManager
-from utils.json_builder import JSONBuilder
-from utils.markdown_builder import MarkdownBuilder
+from shared.logger import get_logger
+from visualization.pdf_rendering import render_battery_report_pdf
+
+
 logger = get_logger(__name__)
 
 
-def main():
-    """Main execution entry point"""
-    logger.info("=" * 60)
-    logger.info("Battery Analysis System - Complete Workflow")
-    logger.info("=" * 60)
-    
-    try:
-        # Initialize components
-        execution_id = generate_execution_id()
-        logger.info(f"Execution ID: {execution_id}")
-        
-        retriever = Retriever(
-            vector_store_path=config.rag.vector_store_path,
-            use_web_search=config.use_web_search
-        )
-        
-        # Create agent instances
-        market_agent = MarketResearchAgent(retriever=retriever)
-        company_agent = CompanyResearchAgent(retriever=retriever)
-        swot_agent = SWOTAnalysisAgent()
-        report_agent = ReportWriterAgent()
-        
-        # Create supervisor with all agents
-        agents_dict = {
-            "market_research": market_agent,
-            "company_research": company_agent,
-            "swot_analysis": swot_agent,
-            "report_writer": report_agent
-        }
-        
-        supervisor = SupervisorAgent(agents_dict=agents_dict)
-        
-        # Run workflow
-        logger.info("Starting workflow execution...")
-        result = supervisor.run({"execution_id": execution_id})
-        
-        final_state = supervisor.get_state()
-        
-        if final_state and final_state.final_report:
-            logger.info("Workflow completed successfully!")
-            
-            # Save JSON report (PRIMARY OUTPUT)
-            logger.info("Generating JSON report...")
-            json_builder = JSONBuilder(output_dir=f"{config.output_dir}/reports_json")
-            
-            # Get report output from final_state
-            report_output = final_state.final_report
-            if isinstance(report_output, str):
-                # If it's a string, convert to dict
-                report_data = {
-                    "executive_summary": "AI Agent 기반 분석 결과",
-                    "introduction": report_output,
-                    "lg_analysis": final_state.lg_strategy or "",
-                    "catl_analysis": final_state.catl_strategy or "",
-                    "comparative_swot": final_state.comparative_swot or "",
-                    "conclusion_and_recommendation": "분석 결과 참고",
-                    "references": []
-                }
-            else:
-                report_data = report_output
-            
-            json_report = json_builder.build_from_report_output(report_data)
-            json_path = json_builder.save_report(json_report)
-            logger.info(f"JSON report saved to: {json_path}")
-            
-            # Save markdown report (OPTIONAL)
-            logger.info("Generating markdown report...")
-            md_builder = MarkdownBuilder(output_dir=f"{config.output_dir}/reports_md")
-            md_content = md_builder.build_from_state(final_state)
-            md_path = md_builder.save_report(md_content)
-            logger.info(f"Markdown report saved to: {md_path}")
-            
-            # Save final state
-            state_manager = StateManager(output_dir=config.output_dir)
-            state_manager.save_state(final_state, "final")
-            
-            logger.info("=" * 60)
-            logger.info("All outputs saved to:")
-            logger.info(f"  - JSON (PRIMARY): {json_path}")
-            logger.info(f"  - Markdown: {md_path}")
-            logger.info("=" * 60)
-            
-            return 0
-        else:
-            logger.error("Workflow failed or no final report generated")
-            return 1
-    
-    except Exception as e:
-        logger.error(f"Workflow execution failed: {str(e)}", exc_info=True)
-        return 1
+def run_pipeline(save_md: bool = True) -> int:
+	"""Execute supervisor workflow and convert final markdown to PDF."""
+	try:
+		logger.info("=" * 60)
+		logger.info("Battery Analysis: Supervisor -> Markdown -> PDF")
+		logger.info("=" * 60)
+
+		vector_store_path = ROOT / "data" / "vector_store"
+		retriever = Retriever(vector_store_path=str(vector_store_path))
+
+		info = retriever.get_embedder_info()
+		if not info.get("vector_store_ready", False):
+			logger.error("Vector store is not ready: %s", vector_store_path)
+			logger.error("Run: python scripts/ingest_documents.py --reset")
+			return 1
+		if info.get("collection_count", 0) == 0:
+			logger.error("Vector store is empty: %s", vector_store_path)
+			logger.error("Run: python scripts/ingest_documents.py --reset")
+			return 1
+
+		supervisor = SupervisorAgent(retriever=retriever)
+		final_md = supervisor.run(save=save_md)
+
+		if not final_md or len(final_md.strip()) == 0:
+			logger.error("Supervisor returned an empty markdown report")
+			return 1
+
+		timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+		md_path = ROOT / "outputs" / "reports_md" / f"battery_report_{timestamp}.md"
+		md_path.parent.mkdir(parents=True, exist_ok=True)
+		if not save_md:
+			md_path.write_text(final_md, encoding="utf-8")
+			logger.info("Markdown report saved -> %s", md_path)
+		else:
+			logger.info("Markdown report saved by supervisor (save=True)")
+
+		pdf_path = ROOT / "outputs" / "reports_pdf" / f"battery_report_{timestamp}.pdf"
+		pdf_path.parent.mkdir(parents=True, exist_ok=True)
+		visualization_dir = ROOT / "visualization"
+		visualization_files = sorted(str(p) for p in visualization_dir.glob("*.png"))
+		if visualization_files:
+			logger.info("Found %d visualization PNG files", len(visualization_files))
+
+		rendered_pdf = render_battery_report_pdf(
+			markdown_text=final_md,
+			output_path=str(pdf_path),
+			visualization_files=visualization_files,
+		)
+
+		logger.info("PDF report saved -> %s", rendered_pdf)
+		logger.info("Pipeline completed successfully")
+		return 0
+
+	except Exception as exc:
+		logger.error("Pipeline failed: %s", exc, exc_info=True)
+		return 1
+
+
+def parse_args() -> argparse.Namespace:
+	parser = argparse.ArgumentParser(
+		description="Run full supervisor workflow and generate PDF from final markdown."
+	)
+	parser.add_argument(
+		"--no-save-md",
+		action="store_true",
+		help="Disable supervisor markdown save and save markdown in main.py only.",
+	)
+	return parser.parse_args()
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+	args = parse_args()
+	raise SystemExit(run_pipeline(save_md=not args.no_save_md))
