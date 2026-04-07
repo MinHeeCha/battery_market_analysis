@@ -20,7 +20,7 @@
 | LLM       | GPT-4 via OpenAI API                |
 | Retrieval | ChromaDB + Tavily Search             |
 | Embedding | BAAI/bge-m3                          |
-| Framework | LangChain, Pydantic, Python          |
+| Framework | LangGraph, Pydantic, Python          |
 
 ## Agents
 
@@ -56,13 +56,14 @@ Supervisor
 ```
 
 ## Quick Start
+PDF 넣기 (data/raw/*.pdf)
 
 ```bash
 pip install -r requirements.txt
-cp .env.example .env          # OPENAI_API_KEY 설정
+cp .env.example .env                         # OPENAI_API_KEY, TAVILY_API_KEY 설정
 
-python scripts/ingest_documents.py   # 문서 임베딩
-python scripts/run_workflow.py       # 전체 파이프라인 실행
+python scripts/ingest_documents.py --reset   # 문서 임베딩
+python main.py               # 전체 파이프라인 실행
 ```
 
 ## Contributors
