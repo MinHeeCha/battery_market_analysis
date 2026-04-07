@@ -60,6 +60,10 @@ Supervisor
 PDF 넣기 (data/raw/*.pdf)
 
 ```bash
+rm -rf .venv
+python3.11 -m venv .venv
+source .venv/bin/activate
+
 pip install -r requirements.txt
 cp .env.example .env        #OPENAI_API_KEY, TAVILY_API_KEY 설정
 python scripts/ingest_documents.py --reset      # 문서 임베딩
