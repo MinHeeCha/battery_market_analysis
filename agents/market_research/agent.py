@@ -1,50 +1,68 @@
 """
-Market Research Agent - investigates battery market trends, size, and competitive landscape
-Uses BaseAgent's LLM integration helper methods and prompts from prompts.py
+Market Research Agent - External Environment Analysis Engine
+
+역할: 글로벌 EV 시장 캐즘, 배터리 수요 구조 변화, 정책/관세, 공급망, 기술/경쟁 구도 분석
+LG에너지솔루션과 CATL의 공통 외부 환경 분석으로 SWOT 도출용 근거 제공
+
+Architecture: think()→검색 → act()→생성+평가+개선 → output()→메타데이터 포함
 """
-from typing import Dict, Any
+
+import json
+import re
+from typing import Dict, Any, List, Optional
 from agents.base import BaseAgent
 from pydantic import BaseModel, Field
 from agents.market_research.prompts import (
     MARKET_RESEARCH_SYSTEM_PROMPT,
-    MARKET_RESEARCH_USER_PROMPT_TEMPLATE
+    MARKET_RESEARCH_USER_PROMPT_TEMPLATE,
+    MARKET_RESEARCH_EVALUATION_PROMPT_TEMPLATE,
+    MARKET_RESEARCH_REVISION_PROMPT_TEMPLATE
 )
 
 
+class MarketResearchEvaluation(BaseModel):
+    """평가 결과"""
+    external_relevance_score: int
+    environment_centrality_score: int
+    key_topics_score: int
+    pass_evaluation: bool
+    included_topics: List[str] = Field(default_factory=list)
+    missing_topics: List[str] = Field(default_factory=list)
+    improvements: List[str] = Field(default_factory=list)
+    feedback: str = ""
+
+
 class MarketResearchOutput(BaseModel):
-    """Output schema for market research"""
-    market_size: str = Field(..., description="Market size and growth")
-    key_players: list[str] = Field(default_factory=list, description="Key market players")
-    technology_trends: str = Field(..., description="Technology trends and innovations")
-    competitive_landscape: str = Field(..., description="Competitive analysis")
-    market_opportunities: str = Field(..., description="Market opportunities")
-    regional_analysis: str = Field(..., description="Regional market analysis")
-    references: list[str] = Field(default_factory=list, description="Source references")
+    """최종 출력"""
+    final_answer: str
+    external_relevance_score: int = 0
+    pass_evaluation: bool = False
+    revision_count: int = 0
+    included_topics: List[str] = Field(default_factory=list)
+    missing_topics: List[str] = Field(default_factory=list)
+    evaluation_details: Optional[Dict[str, Any]] = None
 
 
 class MarketResearchAgent(BaseAgent):
-    """
-    Agent for market research analysis
+    """외부 환경 분석 에이전트"""
     
-    Pipeline:
-    1. Think: Search for relevant market documents
-    2. Act: Use LLM to analyze market information
-    3. Output: Structure and validate results
-    """
+    EVALUATION_SCORE_THRESHOLD = 80
+    MAX_REVISIONS = 2
     
     def __init__(self, llm_client=None, retriever=None):
         super().__init__(name="MarketResearchAgent", llm_client=llm_client, retriever=retriever)
+        self.revision_count = 0
     
     def think(self, context: Dict[str, Any]) -> Dict[str, Any]:
-        """Search and gather market information"""
+        """검색"""
         self.logger.info("Thinking: Searching market documents...")
         
         queries = [
-            "배터리 시장 규모 성장률",
-            "전기차 배터리 시장 트렌드",
-            "배터리 기술 혁신",
-            "배터리 시장 경쟁사 분석",
-            "전 세계 배터리 시장 동향"
+            "글로벌 EV 시장 캐즘 보조금 감소",
+            "배터리 수요 구조 변화 가격 압력",
+            "배터리 관세 정책 규제",
+            "배터리 공급망 원자재 물류",
+            "차세대 배터리 기술 경쟁"
         ]
         
         search_results = {}
@@ -59,81 +77,299 @@ class MarketResearchAgent(BaseAgent):
             "context": context
         }
     
-
-    
     def act(self, thought: Dict[str, Any]) -> Dict[str, Any]:
-        """Use LLM to analyze market information with prompts from prompts.py"""
-        self.logger.info("Acting phase: analyzing market data with LLM...")
+        """생성→평가→개선 사이클"""
+        self.logger.info("Acting: Generating market analysis with evaluation cycle...")
         
-        # Extract and format context from thinking phase
         context = thought.get("context", {})
         context_str = self._format_context(context)
-        
-        # Format search results for better readability
         search_context = self._format_search_results(thought.get("search_results", {}))
         
-        # Use prompts from prompts.py for better maintenance
+        # 1. Draft
+        draft = self._generate_initial_draft(context_str, search_context)
+        self.logger.info("Generated initial draft")
+        
+        # 2. Evaluate
+        evaluation = self._evaluate_analysis(draft)
+        self.logger.info(f"Evaluation: {evaluation.external_relevance_score}/100 (Pass: {evaluation.pass_evaluation})")
+        
+        # 3. Revise if needed
+        final_result = draft
+        self.revision_count = 0
+        
+        while not evaluation.pass_evaluation and self.revision_count < self.MAX_REVISIONS:
+            self.logger.info(f"Revision cycle {self.revision_count + 1}")
+            final_result = self._revise_analysis(original=final_result, evaluation=evaluation)
+            evaluation = self._evaluate_analysis(final_result)
+            self.revision_count += 1
+            self.logger.info(f"After revision {self.revision_count}: {evaluation.external_relevance_score}/100")
+        
+        return {
+            "analysis": final_result,
+            "evaluation": evaluation,
+            "revision_count": self.revision_count
+        }
+    
+    def output(self, action_result: Dict[str, Any]) -> Dict[str, Any]:
+        """최종 구조화"""
+        self.logger.info("Output: Preparing final result with metadata...")
+        
+        analysis = action_result.get("analysis", "")
+        evaluation = action_result.get("evaluation")
+        revision_count = action_result.get("revision_count", 0)
+        
+        output = MarketResearchOutput(
+            final_answer=analysis,
+            external_relevance_score=evaluation.external_relevance_score if evaluation else 0,
+            pass_evaluation=evaluation.pass_evaluation if evaluation else False,
+            revision_count=revision_count,
+            included_topics=evaluation.included_topics if evaluation else [],
+            missing_topics=evaluation.missing_topics if evaluation else [],
+            evaluation_details={
+                "environment_centrality_score": evaluation.environment_centrality_score if evaluation else 0,
+                "key_topics_score": evaluation.key_topics_score if evaluation else 0,
+                "improvements": evaluation.improvements if evaluation else [],
+                "feedback": evaluation.feedback if evaluation else ""
+            }
+        )
+        
+        self.logger.info(f"Output prepared: Score {output.external_relevance_score}/100, Pass: {output.pass_evaluation}")
+        return output.dict()
+    
+    def _generate_initial_draft(self, context_str: str, search_context: str) -> str:
+        """초안 생성"""
+        if not self.llm:
+            return self._get_placeholder_analysis()
+        
         system_prompt = MARKET_RESEARCH_SYSTEM_PROMPT
         user_prompt = MARKET_RESEARCH_USER_PROMPT_TEMPLATE.format(
             context=context_str,
             search_results=search_context
         )
-
-        if not self.llm:
-            return self._get_placeholder_analysis()
         
         try:
-            # Call LLM with structured prompt - try JSON first
-            self.logger.info("Calling LLM for market analysis (JSON mode)...")
             try:
                 response = self.llm.invoke_json(
                     system_prompt=system_prompt,
                     user_prompt=user_prompt,
                     temperature=0.7,
-                    max_tokens=2000
+                    max_tokens=2500
                 )
-                self.logger.info(f"LLM JSON response received")
-                return response
-            except Exception as json_error:
-                # Fallback to text mode if JSON fails
-                self.logger.warning(f"JSON mode failed: {str(json_error)}, falling back to text mode")
+                if isinstance(response, dict) and "analysis" in response:
+                    return response["analysis"]
+                return str(response)
+            except Exception:
                 response = self.llm.invoke(
                     system_prompt=system_prompt,
                     user_prompt=user_prompt,
                     temperature=0.7,
-                    max_tokens=2000
+                    max_tokens=2500
                 )
-                self.logger.info(f"LLM text response received, parsing results...")
-                result = self._parse_market_analysis(response)
-                return result
-            
+                return response
         except Exception as e:
-            self.logger.error(f"LLM analysis failed: {str(e)}, returning placeholder")
+            self.logger.error(f"Draft generation failed: {e}")
             return self._get_placeholder_analysis()
     
-    def output(self, action_result: Dict[str, Any]) -> Dict[str, Any]:
-        """Format and validate the output"""
-        self.logger.info("Output phase: formatting market research results...")
+    def _revise_analysis(self, original: str, evaluation: MarketResearchEvaluation) -> str:
+        """개선"""
+        if not self.llm:
+            return original
         
-        # Create structured output using MarketResearchOutput schema
+        improvements_str = "\n".join(f"- {imp}" for imp in evaluation.improvements) if evaluation.improvements else "없음"
+        missing_str = ", ".join(evaluation.missing_topics) if evaluation.missing_topics else "없음"
+        
+        # 중괄호 이스케이프
+        safe_original = original.replace("{", "{{").replace("}", "}}")
+        
+        revision_prompt = MARKET_RESEARCH_REVISION_PROMPT_TEMPLATE.format(
+            original_analysis=safe_original,
+            score=evaluation.external_relevance_score,
+            env_score=evaluation.environment_centrality_score,
+            topics_score=evaluation.key_topics_score,
+            missing_topics=missing_str,
+            improvements=improvements_str
+        )
+        
         try:
-            output = MarketResearchOutput(
-                market_size=action_result.get("market_size", ""),
-                key_players=action_result.get("key_players", []),
-                technology_trends=action_result.get("technology_trends", ""),
-                competitive_landscape=action_result.get("competitive_landscape", ""),
-                market_opportunities=action_result.get("market_opportunities", ""),
-                regional_analysis=action_result.get("regional_analysis", ""),
-                references=action_result.get("references", [])
+            response = self.llm.invoke(
+                system_prompt=MARKET_RESEARCH_SYSTEM_PROMPT,
+                user_prompt=revision_prompt,
+                temperature=0.7,
+                max_tokens=2500
             )
-            self.logger.info("Market research output validated successfully")
-            return output.dict()
+            return response
         except Exception as e:
-            self.logger.error(f"Output validation failed: {str(e)}, returning raw result")
-            return action_result
+            self.logger.error(f"Revision failed: {e}")
+            return original
+    
+    def _evaluate_analysis(self, analysis: str) -> MarketResearchEvaluation:
+        """평가"""
+        if not self.llm:
+            return self._get_placeholder_evaluation()
+        
+        eval_prompt = MARKET_RESEARCH_EVALUATION_PROMPT_TEMPLATE.replace("{analysis}", analysis)
+        
+        try:
+            try:
+                response = self.llm.invoke_json(
+                    system_prompt="당신은 공정한 평가자입니다. 반드시 JSON 형식으로만 응답하시오.",
+                    user_prompt=eval_prompt,
+                    temperature=0.3,
+                    max_tokens=2000
+                )
+                return self._parse_evaluation_json(response)
+            except Exception:
+                response = self.llm.invoke(
+                    system_prompt="당신은 공정한 평가자입니다.",
+                    user_prompt=eval_prompt,
+                    temperature=0.3,
+                    max_tokens=2000
+                )
+                return self._parse_evaluation_text(response)
+        except Exception as e:
+            self.logger.error(f"Evaluation failed: {e}")
+            return self._get_placeholder_evaluation()
+    
+    def _parse_evaluation_json(self, response: Any) -> MarketResearchEvaluation:
+        """JSON 파싱"""
+        try:
+            if isinstance(response, dict):
+                data = response
+            else:
+                data = json.loads(str(response))
+            
+            score = int(data.get("external_relevance_score", 0))
+            env_score = int(data.get("environment_centrality_score", 0))
+            topics_score = int(data.get("key_topics_score", 0))
+            
+            topic_details = data.get("topic_details", {})
+            included = [k.replace("_", " ") for k, v in topic_details.items() if v.get("included", False)]
+            missing = [k.replace("_", " ") for k, v in topic_details.items() if not v.get("included", False)]
+            
+            improvements = data.get("improvements", [])[:3]
+            feedback = data.get("environment_feedback", "")
+            
+            return MarketResearchEvaluation(
+                external_relevance_score=min(max(score, 0), 100),
+                environment_centrality_score=min(max(env_score, 0), 50),
+                key_topics_score=min(max(topics_score, 0), 50),
+                pass_evaluation=score >= self.EVALUATION_SCORE_THRESHOLD,
+                included_topics=included,
+                missing_topics=missing,
+                improvements=improvements,
+                feedback=feedback
+            )
+        except Exception as e:
+            self.logger.warning(f"JSON parsing failed: {e}")
+            return self._get_placeholder_evaluation()
+    
+    def _parse_evaluation_text(self, response: str) -> MarketResearchEvaluation:
+        """텍스트 파싱 (새로운 형식)"""
+        try:
+            # 1. JSON이 포함되어 있으면 먼저 시도
+            json_match = re.search(r'\{[\s\S]*\}', response)
+            if json_match:
+                try:
+                    data = json.loads(json_match.group())
+                    return self._parse_evaluation_json(data)
+                except:
+                    pass
+            
+            # 2. 새로운 텍스트 형식 파싱
+            response_lower = response.lower()
+            
+            # 총점 추출
+            score_match = re.search(r'총점:\s*(\d+)', response)
+            score = int(score_match.group(1)) if score_match else 0
+            
+            # 환경점수, 항목점수 추출
+            env_score_match = re.search(r'외부환경점수:\s*(\d+)', response)
+            env_score = int(env_score_match.group(1)) if env_score_match else score // 2
+            
+            topics_score_match = re.search(r'항목점수:\s*(\d+)', response)
+            topics_score = int(topics_score_match.group(1)) if topics_score_match else score // 2
+            
+            # 항목별 포함 여부 확인
+            included_topics = []
+            all_topics = [
+                ("EV 시장 캐즘", ["EV캐즘", "ev_chasm", "캐즘"]),
+                ("배터리 수요 구조 변화", ["배터리수요", "demand_change", "배터리 수요"]),
+                ("정책 및 관세", ["정책관세", "policy_tariff", "정책", "관세"]),
+                ("공급망 이슈", ["공급망", "supply", "공급"]),
+                ("기술 및 경쟁 구도", ["기술경쟁", "tech_competition", "기술", "경쟁"])
+            ]
+            
+            for topic_name, keywords in all_topics:
+                # 먼저 "항목: yes" 형식으로 확인
+                for keyword in keywords:
+                    if re.search(rf'{keyword}:.*yes', response_lower):
+                        included_topics.append(topic_name)
+                        break
+                else:
+                    # "yes" 형식이 없으면 단순 존재 여부로 확인
+                    for keyword in keywords:
+                        if keyword in response_lower:
+                            included_topics.append(topic_name)
+                            break
+            
+            # 누락된 항목
+            all_topic_names = [t[0] for t in all_topics]
+            missing_topics = [t for t in all_topic_names if t not in included_topics]
+            
+            # 개선사항 추출
+            improvements = []
+            improvement_lines = response.split('\n')
+            for line in improvement_lines:
+                if '개선' in line or '피드백' in line:
+                    clean_line = line.replace('개선', '').replace('피드백', '').replace(':', '').strip()
+                    if clean_line and len(clean_line) > 5:
+                        improvements.append(clean_line[:100])
+                if len(improvements) >= 3:
+                    break
+            
+            return MarketResearchEvaluation(
+                external_relevance_score=min(score, 100),
+                environment_centrality_score=min(env_score, 50),
+                key_topics_score=min(topics_score, 50),
+                pass_evaluation=score >= self.EVALUATION_SCORE_THRESHOLD,
+                included_topics=included_topics,
+                missing_topics=missing_topics,
+                improvements=improvements,
+                feedback=response[:300]
+            )
+        except Exception as e:
+            self.logger.warning(f"Text parsing failed: {e}")
+            return self._get_placeholder_evaluation()
+    
+    def _format_context(self, context: Any) -> str:
+        """Context 포맷팅"""
+        if not context:
+            return "(요청 배경 정보 없음)"
+        
+        if isinstance(context, str):
+            return context
+        
+        if isinstance(context, dict):
+            lines = []
+            for key, value in context.items():
+                if isinstance(value, (list, dict)):
+                    lines.append(f"• {key}: {str(value)[:200]}")
+                else:
+                    lines.append(f"• {key}: {value}")
+            return "\n".join(lines) if lines else "(요청 배경 정보 없음)"
+        
+        if isinstance(context, list):
+            lines = [f"• {str(item)[:200]}" for item in context]
+            return "\n".join(lines) if lines else "(요청 배경 정보 없음)"
+        
+        try:
+            return str(context)[:500]
+        except Exception as e:
+            self.logger.warning(f"Context formatting failed: {e}")
+            return "(요청 배경 정보 포맷팅 실패)"
     
     def _format_search_results(self, search_results: Dict[str, list]) -> str:
-        """Format search results for LLM context"""
+        """검색 결과 포맷팅"""
         if not search_results:
             return "(검색 결과 없음)"
         
@@ -150,137 +386,21 @@ class MarketResearchAgent(BaseAgent):
         
         return "\n".join(formatted)
     
-    def _format_context(self, context: Any) -> str:
-        """
-        Safely format context for LLM prompt.
-        Converts dict/list to human-readable string format.
-        """
-        if not context:
-            return "(요청 배경 정보 없음)"
-        
-        if isinstance(context, str):
-            return context
-        
-        if isinstance(context, dict):
-            # Format dict as key-value pairs
-            lines = []
-            for key, value in context.items():
-                # Handle various value types
-                if isinstance(value, (list, dict)):
-                    # Convert nested structures to simple repr
-                    lines.append(f"• {key}: {str(value)[:200]}")
-                else:
-                    lines.append(f"• {key}: {value}")
-            return "\n".join(lines) if lines else "(요청 배경 정보 없음)"
-        
-        if isinstance(context, list):
-            # Format list as bullet points
-            lines = [f"• {str(item)[:200]}" for item in context]
-            return "\n".join(lines) if lines else "(요청 배경 정보 없음)"
-        
-        # For other types, try to convert to string safely
-        try:
-            return str(context)[:500]
-        except Exception as e:
-            self.logger.warning(f"Failed to format context: {str(e)}")
-            return "(요청 배경 정보 포맷팅 실패)"
+    def _get_placeholder_analysis(self) -> str:
+        """Placeholder 분석"""
+        return """This is the placeholder..."""
     
+    def _get_placeholder_evaluation(self) -> MarketResearchEvaluation:
+        """Placeholder 평가"""
+        return MarketResearchEvaluation(
+            external_relevance_score=70,
+            environment_centrality_score=35,
+            key_topics_score=35,
+            pass_evaluation=False,
+            included_topics=["EV 시장 캐즘", "배터리 수요 구조 변화", "정책 및 관세", "공supply망 이슈", "기술 및 경쟁 구도"],
+            missing_topics=[],
+            improvements=[],
+            feedback="기본 외부 환경 요소를 포함하고 있으나, 더 심층적인 분석이 필요합니다."
+        )
     
-    def _parse_market_analysis(self, llm_response: str) -> Dict[str, Any]:
-        """Parse LLM response into structured market analysis"""
-        import json
-        import re
-        
-        # Try to extract JSON from response
-        json_pattern = r'\{[\s\S]*\}'
-        json_matches = re.findall(json_pattern, llm_response)
-        
-        # Try to parse JSON if found
-        if json_matches:
-            for match in json_matches:
-                try:
-                    result = json.loads(match)
-                    # Validate it has expected keys
-                    expected_keys = ["market_size", "key_players", "technology_trends", 
-                                    "competitive_landscape", "market_opportunities", "regional_analysis"]
-                    if any(key in result for key in expected_keys):
-                        # Ensure all fields exist
-                        for key in expected_keys:
-                            if key not in result:
-                                result[key] = "" if key != "key_players" else []
-                        return result
-                except json.JSONDecodeError:
-                    continue
-        
-        # If no valid JSON found, do simple text parsing
-        result = {
-            "market_size": "",
-            "key_players": [],
-            "technology_trends": "",
-            "competitive_landscape": "",
-            "market_opportunities": "",
-            "regional_analysis": "",
-            "references": []
-        }
-        
-        # Split by common section headers
-        lines = llm_response.split('\n')
-        current_section = None
-        buffer = []
-        
-        section_keywords = {
-            "market_size": ["시장 규모", "market size", "규모", "성장률"],
-            "key_players": ["주요", "플레이어", "참여자", "회사", "기업", "players", "companies"],
-            "technology_trends": ["기술", "트렌드", "혁신", "technology", "trends", "innovation"],
-            "competitive_landscape": ["경쟁", "competitive", "경쟁 구도", "landscape"],
-            "market_opportunities": ["기회", "기회", "opportunity", "opportunities"],
-            "regional_analysis": ["지역", "regional", "지역별", "분석"]
-        }
-        
-        for line in lines:
-            line = line.strip()
-            if not line:
-                continue
-            
-            # Check if this line starts a new section
-            new_section = None
-            for section, keywords in section_keywords.items():
-                if any(keyword in line.lower() for keyword in keywords):
-                    new_section = section
-                    break
-            
-            if new_section and new_section != current_section:
-                # Save previous section
-                if current_section and buffer:
-                    content = '\n'.join(buffer).strip()
-                    if current_section == "key_players":
-                        # Parse as list
-                        result[current_section] = [p.strip() for p in content.split(',') if p.strip()]
-                    else:
-                        result[current_section] = content
-                
-                current_section = new_section
-                buffer = [line]
-            else:
-                buffer.append(line)
-        
-        # Save last section
-        if current_section and buffer:
-            content = '\n'.join(buffer).strip()
-            if current_section == "key_players":
-                result[current_section] = [p.strip() for p in content.split(',') if p.strip()]
-            else:
-                result[current_section] = content
-        
-        return result
-    
-    def _get_placeholder_analysis(self) -> Dict[str, Any]:
-        return {
-            "market_size": "LLM unavailable",
-            "key_players": [],
-            "technology_trends": "LLM unavailable",
-            "competitive_landscape": "LLM unavailable",
-            "market_opportunities": "LLM unavailable",
-            "regional_analysis": "LLM unavailable",
-            "references": []
-        }
+
