@@ -1,65 +1,6 @@
-# Virtual environment
+.venv/
 venv/
 __pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-.DS_Store
-
-# Environment
-.env
-.env.local
-.env.*.local
-
-# Logs
-*.log
-logs/
-
-# Data
-data/raw/*
-data/processed/*
-data/vector_store/*
-!data/raw/.gitkeep
-!data/processed/.gitkeep
-!data/vector_store/.gitkeep
-
-# Outputs
-outputs/reports_json/*
-outputs/reports_md/*
-outputs/reports_pdf/*
-outputs/logs/*
-!outputs/reports_json/.gitkeep
-!outputs/reports_md/.gitkeep
-!outputs/reports_pdf/.gitkeep
-!outputs/logs/.gitkeep
-
-# State history
-state_history/
-*.json
-
-# Test coverage
-htmlcov/
-.coverage
-.pytest_cache/
-
-# Distribution
-build/
-dist/
-*.egg-info/
-
-# OS
-.DS_Store
-thumbs.db
-
-# Misc
-*.bak
-*.tmp
+*.pyc
 .ipynb_checkpoints/
+.DS_Store

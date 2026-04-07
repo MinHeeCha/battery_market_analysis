@@ -1,26 +1,26 @@
 # Core dependencies
 python-dotenv==1.0.0
-pydantic==2.5.0
+pydantic==1.10.13
 
 # LLM & AI
 langchain==0.1.0
 langchain-openai==0.0.5
-openai==1.3.0
+openai==1.10.0
 
-# Embedding Model (BGE-M3 - open-source multilingual)
+# Embedding Model
 sentence-transformers==2.2.2
 
 # Data & Search
-numpy==1.24.0
+numpy==1.24.4
 pandas==2.1.0
 
-# Vector Database (choose one)
+# Vector Database
 chromadb==0.4.0
-# pinecone-client==3.0.0  # Optional: Pinecone instead of Chroma
+# pinecone-client==3.0.0  # optional
 
 # Document Processing
-pypandoc==1.11  # For Markdown to PDF conversion
-reportlab==4.0.0  # Alternative PDF generation
+pypandoc==1.11
+reportlab==4.0.0
 
 # Visualization
 matplotlib==3.8.0
