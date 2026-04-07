@@ -5,81 +5,113 @@ from typing import Dict, Any
 from datetime import datetime
 from agents.base import BaseAgent
 from agents.report_writer.schema import ReportOutput
+from agents.report_writer.prompts import REPORT_WRITER_SYSTEM_PROMPT, REPORT_COMPOSITION_PROMPT
 
 
 class ReportWriterAgent(BaseAgent):
     """Agent for composing the final comprehensive report"""
-    
+
     def __init__(self, llm_client=None, retriever=None):
         super().__init__(name="ReportWriterAgent", llm_client=llm_client, retriever=retriever)
-    
+
     def think(self, context: Dict[str, Any]) -> Dict[str, Any]:
         """Prepare all agent outputs for report compilation"""
         self.logger.info("Thinking phase: preparing report components...")
-        
         return {
             "market_background": context.get("market_background", ""),
             "lg_strategy": context.get("lg_strategy", ""),
             "catl_strategy": context.get("catl_strategy", ""),
             "comparative_swot": context.get("comparative_swot", ""),
             "execution_id": context.get("execution_id", ""),
-            "context": context
         }
-    
+
     def act(self, thought: Dict[str, Any]) -> Dict[str, Any]:
-        """Use LLM to compose the final report components"""
+        """Use LLM to compose the final report sections as structured JSON"""
         self.logger.info("Acting phase: composing final report sections...")
-        
-        # Placeholder components (in production, LLM would generate these)
-        components = {
-            "executive_summary": "본 보고서는 배터리 시장의 현황을 분석하고 LG에너지솔루션과 CATL의 경쟁 전략을 비교 분석한 결과물입니다.",
-            "introduction": thought.get("market_background", ""),
-            "lg_analysis": thought.get("lg_strategy", ""),
-            "catl_analysis": thought.get("catl_strategy", ""),
-            "comparative_swot": thought.get("comparative_swot", ""),
-            "conclusion_and_recommendation": "배터리 시장에서 성공하기 위해서는 기술 혁신과 비용 경쟁력의 균형을 이루어야 합니다."
-        }
-        
+
+        # Fallback when LLM is not available
         if not self.llm:
-            return components
-        
-        # In real implementation, call LLM for report composition
-        response = self.llm.invoke(
-            system_prompt="전문 리포터로서 모든 분석 내용을 통합하여 체계적인 보고서를 작성하라",
-            user_prompt=f"""
-            다음 분석 결과들을 통합하여 종합적인 배터리 시장 전략 보고서의 각 섹션을 작성하시오:
-            
-            시장 분석: {thought['market_background']}
-            LG 분석: {thought['lg_strategy']}
-            CATL 분석: {thought['catl_strategy']}
-            SWOT 분석: {thought['comparative_swot']}
-            """
+            self.logger.warning("LLM not available, using placeholder report")
+            return self._placeholder(thought)
+
+        user_prompt = REPORT_COMPOSITION_PROMPT.format(
+            market_background=thought.get("market_background", "(없음)"),
+            lg_strategy=thought.get("lg_strategy", "(없음)"),
+            catl_strategy=thought.get("catl_strategy", "(없음)"),
+            comparative_swot=thought.get("comparative_swot", "(없음)"),
         )
-        return response
-    
+
+        try:
+            result = self.call_llm(
+                system_prompt=REPORT_WRITER_SYSTEM_PROMPT,
+                user_prompt=user_prompt,
+                use_json_mode=True,
+                max_tokens=4000,
+            )
+            if isinstance(result, dict):
+                return result
+            return self._placeholder(thought)
+        except Exception as e:
+            self.logger.error(f"LLM call failed: {e}. Using placeholder.")
+            return self._placeholder(thought)
+
+    def _placeholder(self, thought: Dict[str, Any]) -> Dict[str, Any]:
+        """LLM 미연결 또는 오류 시 반환하는 플레이스홀더"""
+        empty_company = {
+            "portfolio": "(분석 결과 없음)",
+            "market_response": "(분석 결과 없음)",
+            "diversification": "(분석 결과 없음)",
+            "core_competency": "(분석 결과 없음)",
+            "profitability": "(분석 결과 없음)",
+            "risks": "(분석 결과 없음)",
+        }
+        return {
+            "summary": {
+                "key_conclusions": "(핵심 결론 없음)",
+                "market_summary": thought.get("market_background", "(없음)"),
+                "company_strategy_summary": "(기업 전략 요약 없음)",
+                "comparison_result": "(비교 결과 없음)",
+                "insights": "(인사이트 없음)",
+            },
+            "market_background": {
+                "market_size_trend": "(시장 규모 분석 없음)",
+                "market_demand_change": "(수요 변화 분석 없음)",
+                "policy_changes": "(정책 변화 분석 없음)",
+            },
+            "lges_analysis": empty_company,
+            "catl_analysis": empty_company,
+            "strategy_comparison": {
+                "core_strategy_comparison": "(전략 비교 없음)",
+                "lges_swot": "(LGES SWOT 없음)",
+                "catl_swot": "(CATL SWOT 없음)",
+                "comparative_swot": thought.get("comparative_swot", "(없음)"),
+            },
+            "overall_implications": "(종합 시사점 없음)",
+            "references": [],
+        }
+
     def output(self, action_result: Dict[str, Any]) -> Dict[str, Any]:
         """Format and validate the output as structured JSON"""
         self.logger.info("Output phase: formatting final report as JSON...")
-        
-        # Create ReportOutput schema object
+
         report_output = ReportOutput(
-            executive_summary=action_result.get("executive_summary", ""),
-            introduction=action_result.get("introduction", ""),
-            lg_analysis=action_result.get("lg_analysis", ""),
-            catl_analysis=action_result.get("catl_analysis", ""),
-            comparative_swot=action_result.get("comparative_swot", ""),
-            conclusion_and_recommendation=action_result.get("conclusion_and_recommendation", ""),
-            references=[],
+            summary=action_result.get("summary", {}),
+            market_background=action_result.get("market_background", {}),
+            lges_analysis=action_result.get("lges_analysis", {}),
+            catl_analysis=action_result.get("catl_analysis", {}),
+            strategy_comparison=action_result.get("strategy_comparison", {}),
+            overall_implications=action_result.get("overall_implications", ""),
+            references=action_result.get("references", []),
             metadata={
                 "generated_at": datetime.now().isoformat(),
                 "agent": "report_writer",
-                "format": "json"
-            }
+                "format": "json",
+            },
         )
-        
+
         return {
-            "result": report_output.dict(),  # Convert to dict for JSON serialization
+            "result": report_output.dict(),
             "agent": "report_writer",
             "status": "completed",
-            "format": "json"
+            "format": "json",
         }
