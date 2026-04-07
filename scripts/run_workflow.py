@@ -23,7 +23,6 @@ from validators.content_validators import (
     MarketValidator, CompanyValidator, SWOTValidator, ReportValidator
 )
 from state.state_manager import StateManager
-from report.markdown_builder import MarkdownBuilder
 from report.json_builder import JSONBuilder
 
 logger = get_logger(__name__)
