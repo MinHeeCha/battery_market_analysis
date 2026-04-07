@@ -12,8 +12,7 @@ import re
 import os
 import requests
 from pathlib import Path
-from typing import Dict, Any, List, Optional, Tuple
-from collections import defaultdict
+from typing import Dict, Any, List, Optional
 from agents.base import BaseAgent
 from pydantic import BaseModel, Field
 from config.settings import config
@@ -220,30 +219,33 @@ class MarketResearchAgent(BaseAgent):
         )
         
         self.logger.info(f"Output prepared: Score {output.external_relevance_score}/100, Pass: {output.pass_evaluation}")
+        response = {
+            "result": output.final_answer,
+            "passed": output.pass_evaluation,
+            "score": output.external_relevance_score,
+            "revision_count": output.revision_count,
+            "agent": "market_research",
+        }
 
-        
-        # 자동 시각화 생성
+        # Optional chart generation: non-blocking and contract-safe.
         try:
-            self.logger.info("Output: Generating market research visualizations...")
-            output_dict = output.dict()
-            
-            visualizer = MarketResearchVisualizer(
-                output_dir="./visualization"
+            visualizer = MarketResearchVisualizer(output_dir="./visualization")
+            visualization_files = visualizer.visualize_market_research(
+                {
+                    "final_answer": output.final_answer,
+                    "external_relevance_score": output.external_relevance_score,
+                    "pass_evaluation": output.pass_evaluation,
+                    "evaluation_details": output.evaluation_details or {},
+                }
             )
-            visualization_files = visualizer.visualize_market_research(output_dict)
-            
-            output_dict["visualization_files"] = visualization_files
-            self.logger.info(f"✓ Generated {len(visualization_files)} visualization files")
-            
+            response["visualization_files"] = visualization_files
+            self.logger.info("Generated %d market visualization files", len(visualization_files))
             for file_path in visualization_files:
-                self.logger.info(f"  - {Path(file_path).name}")
-            
-            return output_dict
-            
+                self.logger.info("  - %s", Path(file_path).name)
         except Exception as e:
-            self.logger.warning(f"Visualization generation failed (non-blocking): {e}")
-            # 시각화 실패해도 analysis 결과는 반환
-            return output.dict()
+            self.logger.warning("Visualization generation failed (non-blocking): %s", e)
+
+        return response
     
     def _generate_initial_draft(self, context_str: str, search_context: str) -> str:
         """초안 생성"""

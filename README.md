@@ -5,22 +5,22 @@
 ## Overview
 - Objective : LG에너지솔루션·CATL 대상 배터리 시장 전략 보고서 자동 생성
 - Method : Supervisor 패턴 멀티 에이전트 + RAG 기반 문서 검색
-- Tools : OpenAI GPT-4, ChromaDB, Tavily Search, BAAI/bge-m3
+- Tools : OpenAI GPT-4o, ChromaDB, Tavily Search, BAAI/bge-m3
 
 ## Features
 - PDF·웹 자료 기반 증거 수집 및 섹션별 RAG 검색
 - Supervisor가 4개 에이전트 순차 조율 (시장조사 → 기업조사 → SWOT → 보고서)
 - 증거 부족 섹션 자동 재검색 (최대 2라운드)
-- pdf보고서 자동 생성
+- Markdown 보고서 자동 생성
 
 ## Tech Stack
 
-| Category  | Details                              |
+| Category  | Details                              |
 |-----------|--------------------------------------|
-| LLM       | GPT-4 via OpenAI API                |
-| Retrieval | ChromaDB + Tavily Search             |
-| Embedding | BAAI/bge-m3                          |
-| Framework | LangChain, Pydantic, Python          |
+| LLM       | GPT-4o via OpenAI API                |
+| Retrieval | ChromaDB + Tavily Search             |
+| Embedding | BAAI/bge-m3                          |
+| Framework | LangGraph, Pydantic, Python          |
 
 ## Agents
 
@@ -36,33 +36,34 @@
 
 ```
 Supervisor
-├── Market Research Agent  (RAG + Web Search)
+├── Market Research Agent  (RAG + Web Search)
 ├── Company Research Agent (RAG + Web Search)
-├── SWOT Analysis Agent    (LLM 분석)
-└── Report Writer Agent    (보고서 생성)
+├── SWOT Analysis Agent    (LLM 분석)
+└── Report Writer Agent    (보고서 생성)
 ```
 
 ## Directory Structure
 
 ```
-├── agents/        # 에이전트 모듈 (supervisor, market_research, company_research, swot_analysis, report_writer)
-├── retrieval/     # RAG 검색 엔진
-├── config/        # 설정 및 공유 스키마
-├── shared/        # LLM 클라이언트, 로거, 유틸
-├── data/          # 원본 문서 및 벡터 DB
-├── outputs/       # 보고서 및 로그
-├── scripts/       # 실행 스크립트
-└── tests/         # 테스트
+├── agents/        # 에이전트 모듈 (supervisor, market_research, company_research, swot_analysis, report_writer)
+├── retrieval/     # RAG 검색 엔진
+├── config/        # 설정 및 공유 스키마
+├── shared/        # LLM 클라이언트, 로거, 유틸
+├── data/          # 원본 문서 및 벡터 DB
+├── outputs/       # 보고서 및 로그
+├── scripts/       # 실행 스크립트
+└── tests/         # 테스트
 ```
 
 ## Quick Start
 
+PDF 넣기 (data/raw/*.pdf)
+
 ```bash
 pip install -r requirements.txt
-cp .env.example .env          # OPENAI_API_KEY 설정
-
-python scripts/ingest_documents.py   # 문서 임베딩
-python scripts/run_workflow.py       # 전체 파이프라인 실행
+cp .env.example .env        #OPENAI_API_KEY, TAVILY_API_KEY 설정
+python scripts/ingest_documents.py --reset      # 문서 임베딩
+python scripts/run_workflow.py                  # 전체 파이프라인 실행
 ```
 
 ## Contributors
@@ -70,4 +71,3 @@ python scripts/run_workflow.py       # 전체 파이프라인 실행
 - 김정우 : Swot analysis Agent
 - 박유빈 : Vector DB, Retrieval, Company Research Agent
 - 차민희 : Market Research Agent
-  
