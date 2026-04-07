@@ -220,6 +220,7 @@ class MarketResearchAgent(BaseAgent):
         )
         
         self.logger.info(f"Output prepared: Score {output.external_relevance_score}/100, Pass: {output.pass_evaluation}")
+
         
         # 자동 시각화 생성
         try:

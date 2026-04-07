@@ -5,19 +5,19 @@
 ## Overview
 - Objective : LG에너지솔루션·CATL 대상 배터리 시장 전략 보고서 자동 생성
 - Method : Supervisor 패턴 멀티 에이전트 + RAG 기반 문서 검색
-- Tools : OpenAI GPT-4o, ChromaDB, Tavily Search, BAAI/bge-m3
+- Tools : OpenAI GPT-4, ChromaDB, Tavily Search, BAAI/bge-m3
 
 ## Features
 - PDF·웹 자료 기반 증거 수집 및 섹션별 RAG 검색
 - Supervisor가 4개 에이전트 순차 조율 (시장조사 → 기업조사 → SWOT → 보고서)
 - 증거 부족 섹션 자동 재검색 (최대 2라운드)
-- Markdown 보고서 자동 생성
+- pdf보고서 자동 생성
 
 ## Tech Stack
 
 | Category  | Details                              |
 |-----------|--------------------------------------|
-| LLM       | GPT-4o via OpenAI API                |
+| LLM       | GPT-4 via OpenAI API                |
 | Retrieval | ChromaDB + Tavily Search             |
 | Embedding | BAAI/bge-m3                          |
 | Framework | LangChain, Pydantic, Python          |

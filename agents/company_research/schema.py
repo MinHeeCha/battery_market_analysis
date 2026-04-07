@@ -4,7 +4,7 @@ Company Research Agent - schema definitions
 """
 
 from pydantic import BaseModel, Field
-from typing import List, Literal
+from typing import List, Literal, Optional
 
 
 class SourceItem(BaseModel):
@@ -19,6 +19,13 @@ class SourceItem(BaseModel):
         "news",
         "other",
     ] = Field(..., description="Type of source")
+    author: Optional[str] = Field(None, description="Author or organization name")
+    year: Optional[str] = Field(None, description="Publication year")
+    journal: Optional[str] = Field(None, description="Journal or publication name")
+    volume: Optional[str] = Field(None, description="Volume number")
+    issue: Optional[str] = Field(None, description="Issue number")
+    pages: Optional[str] = Field(None, description="Page range")
+    site_name: Optional[str] = Field(None, description="Website name for web sources")
 
 
 class CompanySectionResult(BaseModel):
