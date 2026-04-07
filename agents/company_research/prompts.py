@@ -1,53 +1,50 @@
-"""
-Company Research Agent - prompt templates
-"""
+"""Prompt templates and query definitions for CompanyResearchAgent."""
 
-COMPANY_RESEARCH_SYSTEM_PROMPT = """
-당신은 배터리 업계 기업 분석 전문가입니다.
+from typing import Dict
 
-역할:
-- LG에너지솔루션과 CATL 두 기업의 전략을 심층 분석한다
-- 각 기업의 강점과 약점을 객관적으로 평가한다
-- 기술 로드맵과 향후 계획을 파악한다
-- 시장 점유율과 경쟁 위치를 분석한다
 
-출력 요구사항:
-- 각 기업당 약 1페이지 분량 (총 2페이지)
-- 정성적이고 균형잡힌 분석
-- 구체적인 예시와 데이터 포함
-- 한국어로 작성
-"""
+SECTION_QUERIES: Dict[str, str] = {
+	"portfolio_status": "{company} 현재 사업 포트폴리오 현황 제품 고객 지역",
+	"market_response_strategy": "{company} 시장 환경 변화 대응 전략 EV 캐즘 대응",
+	"diversification_strategy": "{company} 다각화 전략 방향",
+	"core_competency": "{company} 핵심 경쟁력",
+	"profitability_strategy": "{company} 수익성 구조 및 전략",
+	"risks_and_challenges": "{company} 주요 리스크 및 과제",
+}
 
-LG_ENERGY_ANALYSIS_PROMPT = """
-LG에너지솔루션에 대해 다음 항목을 분석하시오:
 
-검색 결과:
-{search_results}
+RETRY_HINT = "최신 실적 전략 리스크 공시 발표 투자자자료"
 
-분석 항목:
-1. 핵심 경쟁력
-2. 전략적 이니셔티브
-3. 시장 위치와 점유율
-4. 기술 로드맵
-5. 주요 파트너십
-6. 향후 전망
 
-상세하게 분석하시오.
-"""
+COMPANY_SYSTEM_PROMPT = """
+You are a senior battery industry strategy analyst.
+You must produce concise, evidence-grounded output in Korean.
+Return a JSON object with exactly these keys:
+- portfolio_status
+- market_response_strategy
+- diversification_strategy
+- core_competency
+- profitability_strategy
+- risks_and_challenges
 
-CATL_ANALYSIS_PROMPT = """
-CATL에 대해 다음 항목을 분석하시오:
+Rules:
+1) Do not fabricate facts.
+2) Reflect uncertainty where evidence is weak.
+3) Use business-focused wording suitable for executive reporting.
+4) Each section should be 3-6 sentences.
+""".strip()
 
-검색 결과:
-{search_results}
 
-분석 항목:
-1. 핵심 경쟁력
-2. 전략적 이니셔티브
-3. 시장 위치와 점유율
-4. 기술 로드맵
-5. 주요 파트너십
-6. 향후 전망
+def build_company_user_prompt(company_name: str, evidence_text: str) -> str:
+	"""Build user prompt for one company using aggregated evidence."""
+	return f"""
+대상 기업: {company_name}
 
-상세하게 분석하시오.
-"""
+아래 근거를 바탕으로 6개 항목을 분석하라.
+
+[근거]
+{evidence_text}
+
+반드시 JSON 객체로만 답하라.
+""".strip()
+
