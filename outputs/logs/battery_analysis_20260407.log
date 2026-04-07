@@ -960,3 +960,356 @@
 2026-04-07 15:18:09 - MarketResearchAgent - INFO - Output: Preparing final result with metadata...
 2026-04-07 15:18:09 - MarketResearchAgent - INFO - Output prepared: Score 70/100, Pass: False
 2026-04-07 15:18:09 - MarketResearchAgent - INFO - =[MarketResearchAgent]= Agent completed successfully ✓
+2026-04-07 16:33:05 - retrieval.retriever - INFO - Initializing embedder with model: BAAI/bge-m3
+2026-04-07 16:33:05 - retrieval.embedder - INFO - Loading embedding model: BAAI/bge-m3
+2026-04-07 16:33:09 - retrieval.embedder - INFO - Model loaded successfully on device: cpu
+2026-04-07 16:33:09 - retrieval.retriever - INFO - Embedder initialized successfully
+2026-04-07 16:33:09 - retrieval.retriever - INFO - Chroma initialized at /Users/yubin/playground/battery_market_analysis/data/vector_store (collection=battery_documents, count=438)
+2026-04-07 16:33:09 - shared.llm_client - INFO - LLM Client initialized with model: gpt-4o
+2026-04-07 16:33:09 - CompanyResearchAgent - INFO - LLM client auto-initialized for CompanyResearchAgent
+2026-04-07 16:33:09 - CompanyResearchAgent - INFO - =[CompanyResearchAgent]= Agent starting...
+2026-04-07 16:33:09 - CompanyResearchAgent - INFO -   → Think phase...
+2026-04-07 16:33:09 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 현재 사업 포트폴리오 현황 제품 고객 지역 (top_k=5)
+2026-04-07 16:33:12 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:33:13 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 시장 환경 변화 대응 전략 EV 캐즘 대응 (top_k=5)
+2026-04-07 16:33:13 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:33:14 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 다각화 전략 방향 (top_k=5)
+2026-04-07 16:33:14 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:33:14 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 핵심 경쟁력 (top_k=5)
+2026-04-07 16:33:14 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:33:15 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 수익성 구조 및 전략 (top_k=5)
+2026-04-07 16:33:15 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:33:16 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 주요 리스크 및 과제 (top_k=5)
+2026-04-07 16:33:16 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:33:16 - retrieval.retriever - INFO - Searching for: CATL 현재 사업 포트폴리오 현황 제품 고객 지역 (top_k=5)
+2026-04-07 16:33:17 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:33:17 - retrieval.retriever - INFO - Searching for: CATL 시장 환경 변화 대응 전략 EV 캐즘 대응 (top_k=5)
+2026-04-07 16:33:17 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:33:18 - retrieval.retriever - INFO - Searching for: CATL 다각화 전략 방향 (top_k=5)
+2026-04-07 16:33:18 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:33:19 - retrieval.retriever - INFO - Searching for: CATL 핵심 경쟁력 (top_k=5)
+2026-04-07 16:33:19 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:33:19 - retrieval.retriever - INFO - Searching for: CATL 수익성 구조 및 전략 (top_k=5)
+2026-04-07 16:33:19 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:33:20 - retrieval.retriever - INFO - Searching for: CATL 주요 리스크 및 과제 (top_k=5)
+2026-04-07 16:33:20 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:33:21 - CompanyResearchAgent - INFO -   → Act phase...
+2026-04-07 16:33:28 - shared.llm_client - INFO - LLM JSON response received
+2026-04-07 16:33:36 - shared.llm_client - INFO - LLM JSON response received
+2026-04-07 16:33:36 - CompanyResearchAgent - INFO -   → Output phase...
+2026-04-07 16:33:36 - CompanyResearchAgent - INFO - =[CompanyResearchAgent]= Agent completed successfully ✓
+2026-04-07 16:33:36 - agents.supervisor.agent - INFO - [SupervisorAgent] workflow START
+2026-04-07 16:33:36 - agents.supervisor.agent - INFO - [supervisor] parallel_research START
+2026-04-07 16:33:36 - shared.llm_client - INFO - LLM Client initialized with model: gpt-4o
+2026-04-07 16:33:36 - CompanyResearchAgent - INFO - LLM client auto-initialized for CompanyResearchAgent
+2026-04-07 16:33:36 - CompanyResearchAgent - INFO - =[CompanyResearchAgent]= Agent starting...
+2026-04-07 16:33:36 - CompanyResearchAgent - INFO -   → Think phase...
+2026-04-07 16:33:36 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 현재 사업 포트폴리오 현황 제품 고객 지역 (top_k=5)
+2026-04-07 16:33:36 - shared.llm_client - INFO - LLM Client initialized with model: gpt-4o
+2026-04-07 16:33:36 - MarketResearchAgent - INFO - LLM client auto-initialized for MarketResearchAgent
+2026-04-07 16:33:36 - MarketResearchAgent - INFO - =[MarketResearchAgent]= Agent starting...
+2026-04-07 16:33:36 - MarketResearchAgent - INFO -   → Think phase...
+2026-04-07 16:33:36 - MarketResearchAgent - INFO - Thinking: Searching market documents...
+2026-04-07 16:33:36 - retrieval.retriever - INFO - Searching for: 글로벌 EV 시장 캐즘 보조금 감소 (top_k=3)
+2026-04-07 16:33:36 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:33:36 - retrieval.retriever - INFO - Found 3 vector search results
+2026-04-07 16:33:36 - retrieval.retriever - INFO - Searching for: 배터리 수요 구조 변화 가격 압력 (top_k=3)
+2026-04-07 16:33:36 - retrieval.retriever - INFO - Found 3 vector search results
+2026-04-07 16:33:36 - retrieval.retriever - INFO - Searching for: 배터리 관세 정책 규제 (top_k=3)
+2026-04-07 16:33:36 - retrieval.retriever - INFO - Found 3 vector search results
+2026-04-07 16:33:36 - retrieval.retriever - INFO - Searching for: 배터리 공급망 원자재 물류 (top_k=3)
+2026-04-07 16:33:36 - retrieval.retriever - INFO - Found 3 vector search results
+2026-04-07 16:33:36 - retrieval.retriever - INFO - Searching for: 차세대 배터리 기술 경쟁 (top_k=3)
+2026-04-07 16:33:36 - retrieval.retriever - INFO - Found 3 vector search results
+2026-04-07 16:33:36 - MarketResearchAgent - INFO -   → Act phase...
+2026-04-07 16:33:36 - MarketResearchAgent - INFO - Acting: Generating market analysis with evaluation cycle...
+2026-04-07 16:33:37 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 시장 환경 변화 대응 전략 EV 캐즘 대응 (top_k=5)
+2026-04-07 16:33:37 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:33:38 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 다각화 전략 방향 (top_k=5)
+2026-04-07 16:33:38 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:33:38 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 핵심 경쟁력 (top_k=5)
+2026-04-07 16:33:38 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:33:39 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 수익성 구조 및 전략 (top_k=5)
+2026-04-07 16:33:39 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:33:40 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 주요 리스크 및 과제 (top_k=5)
+2026-04-07 16:33:40 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:33:40 - retrieval.retriever - INFO - Searching for: CATL 현재 사업 포트폴리오 현황 제품 고객 지역 (top_k=5)
+2026-04-07 16:33:40 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:33:41 - retrieval.retriever - INFO - Searching for: CATL 시장 환경 변화 대응 전략 EV 캐즘 대응 (top_k=5)
+2026-04-07 16:33:41 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:33:42 - retrieval.retriever - INFO - Searching for: CATL 다각화 전략 방향 (top_k=5)
+2026-04-07 16:33:42 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:33:42 - retrieval.retriever - INFO - Searching for: CATL 핵심 경쟁력 (top_k=5)
+2026-04-07 16:33:43 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:33:43 - retrieval.retriever - INFO - Searching for: CATL 수익성 구조 및 전략 (top_k=5)
+2026-04-07 16:33:43 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:33:44 - retrieval.retriever - INFO - Searching for: CATL 주요 리스크 및 과제 (top_k=5)
+2026-04-07 16:33:44 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:33:45 - CompanyResearchAgent - INFO -   → Act phase...
+2026-04-07 16:33:47 - shared.llm_client - INFO - LLM response received (1204 chars)
+2026-04-07 16:33:47 - MarketResearchAgent - INFO - Generated initial draft
+2026-04-07 16:33:48 - shared.llm_client - INFO - LLM JSON response received
+2026-04-07 16:33:50 - shared.llm_client - INFO - LLM response received (395 chars)
+2026-04-07 16:33:50 - MarketResearchAgent - INFO - Evaluation: 90/100 (Pass: True)
+2026-04-07 16:33:50 - MarketResearchAgent - INFO -   → Output phase...
+2026-04-07 16:33:50 - MarketResearchAgent - INFO - Output: Preparing final result with metadata...
+2026-04-07 16:33:50 - MarketResearchAgent - INFO - Output prepared: Score 90/100, Pass: True
+2026-04-07 16:33:50 - MarketResearchAgent - INFO - =[MarketResearchAgent]= Agent completed successfully ✓
+2026-04-07 16:33:50 - agents.supervisor.agent - INFO - [market_research] done (len=1204)
+2026-04-07 16:33:55 - shared.llm_client - INFO - LLM JSON response received
+2026-04-07 16:33:55 - CompanyResearchAgent - INFO -   → Output phase...
+2026-04-07 16:33:55 - CompanyResearchAgent - INFO - =[CompanyResearchAgent]= Agent completed successfully ✓
+2026-04-07 16:33:55 - agents.supervisor.agent - INFO - [company_research] done (lg=2102, catl=2133)
+2026-04-07 16:33:55 - agents.supervisor.agent - INFO - [supervisor] parallel_research DONE
+2026-04-07 16:33:55 - agents.supervisor.agent - INFO - [supervisor] eval_research market=True company=True (retries m=0 c=0)
+2026-04-07 16:33:55 - agents.supervisor.agent - INFO - [supervisor] run_swot START
+2026-04-07 16:33:55 - shared.llm_client - INFO - LLM Client initialized with model: gpt-4o
+2026-04-07 16:33:55 - SWOTAnalysisAgent - INFO - LLM client auto-initialized for SWOTAnalysisAgent
+2026-04-07 16:33:55 - SWOTAnalysisAgent - INFO - =[SWOTAnalysisAgent]= Agent starting...
+2026-04-07 16:33:55 - SWOTAnalysisAgent - INFO -   → Think phase...
+2026-04-07 16:33:55 - SWOTAnalysisAgent - INFO - Thinking phase: preparing SWOT context...
+2026-04-07 16:33:55 - SWOTAnalysisAgent - INFO -   → Act phase...
+2026-04-07 16:34:02 - shared.llm_client - INFO - LLM response received (1456 chars)
+2026-04-07 16:34:04 - shared.llm_client - INFO - LLM response received (287 chars)
+2026-04-07 16:34:04 - SWOTAnalysisAgent - INFO - SWOT 평가 attempt=1 | TSR=0.900 | Fact=0.900 | Specificity=0.800 | Pass=True
+2026-04-07 16:34:04 - SWOTAnalysisAgent - INFO -   → Output phase...
+2026-04-07 16:34:04 - SWOTAnalysisAgent - INFO - Output phase: formatting SWOT analysis results...
+2026-04-07 16:34:04 - SWOTAnalysisAgent - INFO - =[SWOTAnalysisAgent]= Agent completed successfully ✓
+2026-04-07 16:34:04 - agents.supervisor.agent - INFO - [supervisor] run_swot DONE (len=1265)
+2026-04-07 16:34:04 - agents.supervisor.agent - INFO - [supervisor] eval_swot approved=True (retries=0)
+2026-04-07 16:34:04 - agents.supervisor.agent - INFO - [supervisor] run_report START
+2026-04-07 16:34:04 - shared.llm_client - INFO - LLM Client initialized with model: gpt-4o
+2026-04-07 16:34:04 - ReportWriterAgent - INFO - LLM client auto-initialized for ReportWriterAgent
+2026-04-07 16:34:04 - ReportWriterAgent - INFO - =[ReportWriterAgent]= Agent starting...
+2026-04-07 16:34:04 - ReportWriterAgent - INFO -   → Think phase...
+2026-04-07 16:34:04 - ReportWriterAgent - INFO - Thinking phase: preparing report components...
+2026-04-07 16:34:04 - ReportWriterAgent - INFO -   → Act phase...
+2026-04-07 16:34:04 - ReportWriterAgent - INFO - Acting phase: composing final report sections...
+2026-04-07 16:34:26 - shared.llm_client - INFO - LLM JSON response received
+2026-04-07 16:34:26 - ReportWriterAgent - INFO -   → Output phase...
+2026-04-07 16:34:26 - ReportWriterAgent - INFO - Output phase: converting report to markdown...
+2026-04-07 16:34:26 - ReportWriterAgent - INFO - =[ReportWriterAgent]= Agent completed successfully ✓
+2026-04-07 16:34:26 - agents.supervisor.agent - INFO - [supervisor] run_report DONE (len=5720)
+2026-04-07 16:34:26 - agents.supervisor.agent - INFO - [supervisor] eval_report approved=True (retries=0)
+2026-04-07 16:34:26 - agents.supervisor.agent - INFO - [SupervisorAgent] workflow DONE (report len=5720)
+2026-04-07 16:34:26 - agents.supervisor.agent - INFO - [SupervisorAgent] report saved → /Users/yubin/playground/battery_market_analysis/outputs/reports_md/battery_report_20260407_163426.md
+2026-04-07 16:34:26 - shared.llm_client - INFO - LLM Client initialized with model: gpt-4o
+2026-04-07 16:34:26 - MarketResearchAgent - INFO - LLM client auto-initialized for MarketResearchAgent
+2026-04-07 16:34:26 - MarketResearchAgent - INFO - =[MarketResearchAgent]= Agent starting...
+2026-04-07 16:34:26 - MarketResearchAgent - INFO -   → Think phase...
+2026-04-07 16:34:26 - MarketResearchAgent - INFO - Thinking: Searching market documents...
+2026-04-07 16:34:26 - retrieval.retriever - INFO - Searching for: 글로벌 EV 시장 캐즘 보조금 감소 (top_k=3)
+2026-04-07 16:34:26 - retrieval.retriever - INFO - Found 3 vector search results
+2026-04-07 16:34:26 - retrieval.retriever - INFO - Searching for: 배터리 수요 구조 변화 가격 압력 (top_k=3)
+2026-04-07 16:34:26 - retrieval.retriever - INFO - Found 3 vector search results
+2026-04-07 16:34:26 - retrieval.retriever - INFO - Searching for: 배터리 관세 정책 규제 (top_k=3)
+2026-04-07 16:34:26 - retrieval.retriever - INFO - Found 3 vector search results
+2026-04-07 16:34:26 - retrieval.retriever - INFO - Searching for: 배터리 공급망 원자재 물류 (top_k=3)
+2026-04-07 16:34:26 - retrieval.retriever - INFO - Found 3 vector search results
+2026-04-07 16:34:26 - retrieval.retriever - INFO - Searching for: 차세대 배터리 기술 경쟁 (top_k=3)
+2026-04-07 16:34:26 - retrieval.retriever - INFO - Found 3 vector search results
+2026-04-07 16:34:26 - MarketResearchAgent - INFO -   → Act phase...
+2026-04-07 16:34:26 - MarketResearchAgent - INFO - Acting: Generating market analysis with evaluation cycle...
+2026-04-07 16:34:33 - shared.llm_client - INFO - LLM response received (1171 chars)
+2026-04-07 16:34:33 - MarketResearchAgent - INFO - Generated initial draft
+2026-04-07 16:34:36 - shared.llm_client - INFO - LLM response received (436 chars)
+2026-04-07 16:34:36 - MarketResearchAgent - INFO - Evaluation: 90/100 (Pass: True)
+2026-04-07 16:34:36 - MarketResearchAgent - INFO -   → Output phase...
+2026-04-07 16:34:36 - MarketResearchAgent - INFO - Output: Preparing final result with metadata...
+2026-04-07 16:34:36 - MarketResearchAgent - INFO - Output prepared: Score 90/100, Pass: True
+2026-04-07 16:34:36 - MarketResearchAgent - INFO - =[MarketResearchAgent]= Agent completed successfully ✓
+2026-04-07 16:34:36 - shared.llm_client - INFO - LLM Client initialized with model: gpt-4o
+2026-04-07 16:34:36 - ReportWriterAgent - INFO - LLM client auto-initialized for ReportWriterAgent
+2026-04-07 16:34:36 - ReportWriterAgent - INFO - =[ReportWriterAgent]= Agent starting...
+2026-04-07 16:34:36 - ReportWriterAgent - INFO -   → Think phase...
+2026-04-07 16:34:36 - ReportWriterAgent - INFO - Thinking phase: preparing report components...
+2026-04-07 16:34:36 - ReportWriterAgent - INFO -   → Act phase...
+2026-04-07 16:34:36 - ReportWriterAgent - INFO - Acting phase: composing final report sections...
+2026-04-07 16:34:52 - shared.llm_client - INFO - LLM JSON response received
+2026-04-07 16:34:52 - ReportWriterAgent - INFO -   → Output phase...
+2026-04-07 16:34:52 - ReportWriterAgent - INFO - Output phase: converting report to markdown...
+2026-04-07 16:34:52 - ReportWriterAgent - INFO - =[ReportWriterAgent]= Agent completed successfully ✓
+2026-04-07 16:34:52 - shared.llm_client - INFO - LLM Client initialized with model: gpt-4o
+2026-04-07 16:34:52 - SWOTAnalysisAgent - INFO - LLM client auto-initialized for SWOTAnalysisAgent
+2026-04-07 16:34:52 - SWOTAnalysisAgent - INFO - =[SWOTAnalysisAgent]= Agent starting...
+2026-04-07 16:34:52 - SWOTAnalysisAgent - INFO -   → Think phase...
+2026-04-07 16:34:52 - SWOTAnalysisAgent - INFO - Thinking phase: preparing SWOT context...
+2026-04-07 16:34:52 - SWOTAnalysisAgent - INFO -   → Act phase...
+2026-04-07 16:34:59 - shared.llm_client - INFO - LLM response received (1153 chars)
+2026-04-07 16:35:01 - shared.llm_client - INFO - LLM response received (260 chars)
+2026-04-07 16:35:01 - SWOTAnalysisAgent - INFO - SWOT 평가 attempt=1 | TSR=0.917 | Fact=0.900 | Specificity=0.850 | Pass=True
+2026-04-07 16:35:01 - SWOTAnalysisAgent - INFO -   → Output phase...
+2026-04-07 16:35:01 - SWOTAnalysisAgent - INFO - Output phase: formatting SWOT analysis results...
+2026-04-07 16:35:01 - SWOTAnalysisAgent - INFO - =[SWOTAnalysisAgent]= Agent completed successfully ✓
+2026-04-07 16:40:46 - __main__ - INFO - ============================================================
+2026-04-07 16:40:46 - __main__ - INFO - Battery Analysis: Supervisor -> Markdown -> PDF
+2026-04-07 16:40:46 - __main__ - INFO - ============================================================
+2026-04-07 16:40:46 - retrieval.retriever - INFO - Initializing embedder with model: BAAI/bge-m3
+2026-04-07 16:40:46 - retrieval.embedder - INFO - Loading embedding model: BAAI/bge-m3
+2026-04-07 16:40:49 - retrieval.embedder - INFO - Model loaded successfully on device: cpu
+2026-04-07 16:40:49 - retrieval.retriever - INFO - Embedder initialized successfully
+2026-04-07 16:40:50 - retrieval.retriever - INFO - Chroma initialized at /Users/yubin/playground/battery_market_analysis/data/vector_store (collection=battery_documents, count=438)
+2026-04-07 16:40:50 - agents.supervisor.agent - INFO - [SupervisorAgent] workflow START
+2026-04-07 16:40:50 - agents.supervisor.agent - INFO - [supervisor] parallel_research START
+2026-04-07 16:40:50 - shared.llm_client - INFO - LLM Client initialized with model: gpt-4o
+2026-04-07 16:40:50 - MarketResearchAgent - INFO - LLM client auto-initialized for MarketResearchAgent
+2026-04-07 16:40:50 - MarketResearchAgent - INFO - =[MarketResearchAgent]= Agent starting...
+2026-04-07 16:40:50 - shared.llm_client - INFO - LLM Client initialized with model: gpt-4o
+2026-04-07 16:40:50 - MarketResearchAgent - INFO -   → Think phase...
+2026-04-07 16:40:50 - CompanyResearchAgent - INFO - LLM client auto-initialized for CompanyResearchAgent
+2026-04-07 16:40:50 - MarketResearchAgent - INFO - Thinking: Searching market documents...
+2026-04-07 16:40:50 - retrieval.retriever - INFO - Searching for: 글로벌 EV 시장 캐즘 보조금 감소 (top_k=3)
+2026-04-07 16:40:50 - CompanyResearchAgent - INFO - =[CompanyResearchAgent]= Agent starting...
+2026-04-07 16:40:50 - CompanyResearchAgent - INFO -   → Think phase...
+2026-04-07 16:40:50 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 현재 사업 포트폴리오 현황 제품 고객 지역 (top_k=5)
+2026-04-07 16:40:53 - retrieval.retriever - INFO - Found 3 vector search results
+2026-04-07 16:40:53 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:40:53 - retrieval.retriever - INFO - Searching for: 배터리 수요 구조 변화 가격 압력 (top_k=3)
+2026-04-07 16:40:53 - retrieval.retriever - INFO - Found 3 vector search results
+2026-04-07 16:40:53 - retrieval.retriever - INFO - Searching for: 배터리 관세 정책 규제 (top_k=3)
+2026-04-07 16:40:53 - retrieval.retriever - INFO - Found 3 vector search results
+2026-04-07 16:40:53 - retrieval.retriever - INFO - Searching for: 배터리 공급망 원자재 물류 (top_k=3)
+2026-04-07 16:40:53 - retrieval.retriever - INFO - Found 3 vector search results
+2026-04-07 16:40:53 - retrieval.retriever - INFO - Searching for: 차세대 배터리 기술 경쟁 (top_k=3)
+2026-04-07 16:40:53 - retrieval.retriever - INFO - Found 3 vector search results
+2026-04-07 16:40:53 - MarketResearchAgent - INFO -   → Act phase...
+2026-04-07 16:40:53 - MarketResearchAgent - INFO - Acting: Generating market analysis with evaluation cycle...
+2026-04-07 16:40:54 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 시장 환경 변화 대응 전략 EV 캐즘 대응 (top_k=5)
+2026-04-07 16:40:54 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:40:55 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 다각화 전략 방향 (top_k=5)
+2026-04-07 16:40:55 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:40:57 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 핵심 경쟁력 (top_k=5)
+2026-04-07 16:40:57 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:40:58 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 수익성 구조 및 전략 (top_k=5)
+2026-04-07 16:40:59 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:40:59 - shared.llm_client - INFO - LLM response received (1092 chars)
+2026-04-07 16:40:59 - MarketResearchAgent - INFO - Generated initial draft
+2026-04-07 16:41:00 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 주요 리스크 및 과제 (top_k=5)
+2026-04-07 16:41:00 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:41:02 - retrieval.retriever - INFO - Searching for: CATL 현재 사업 포트폴리오 현황 제품 고객 지역 (top_k=5)
+2026-04-07 16:41:02 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:41:02 - shared.llm_client - INFO - LLM response received (421 chars)
+2026-04-07 16:41:02 - MarketResearchAgent - INFO - Evaluation: 95/100 (Pass: True)
+2026-04-07 16:41:02 - MarketResearchAgent - INFO -   → Output phase...
+2026-04-07 16:41:02 - MarketResearchAgent - INFO - Output: Preparing final result with metadata...
+2026-04-07 16:41:02 - MarketResearchAgent - INFO - Output prepared: Score 95/100, Pass: True
+2026-04-07 16:41:02 - MarketResearchAgent - INFO - =[MarketResearchAgent]= Agent completed successfully ✓
+2026-04-07 16:41:02 - agents.supervisor.agent - INFO - [market_research] done (len=1092)
+2026-04-07 16:41:03 - retrieval.retriever - INFO - Searching for: CATL 시장 환경 변화 대응 전략 EV 캐즘 대응 (top_k=5)
+2026-04-07 16:41:03 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:41:04 - retrieval.retriever - INFO - Searching for: CATL 다각화 전략 방향 (top_k=5)
+2026-04-07 16:41:04 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:41:06 - retrieval.retriever - INFO - Searching for: CATL 핵심 경쟁력 (top_k=5)
+2026-04-07 16:41:06 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:41:07 - retrieval.retriever - INFO - Searching for: CATL 수익성 구조 및 전략 (top_k=5)
+2026-04-07 16:41:08 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:41:09 - retrieval.retriever - INFO - Searching for: CATL 주요 리스크 및 과제 (top_k=5)
+2026-04-07 16:41:09 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:41:11 - CompanyResearchAgent - INFO -   → Act phase...
+2026-04-07 16:41:19 - shared.llm_client - INFO - LLM JSON response received
+2026-04-07 16:41:27 - shared.llm_client - INFO - LLM JSON response received
+2026-04-07 16:41:27 - CompanyResearchAgent - INFO -   → Output phase...
+2026-04-07 16:41:27 - CompanyResearchAgent - INFO - =[CompanyResearchAgent]= Agent completed successfully ✓
+2026-04-07 16:41:27 - agents.supervisor.agent - INFO - [company_research] done (lg=2157, catl=2129)
+2026-04-07 16:41:27 - agents.supervisor.agent - INFO - [supervisor] parallel_research DONE
+2026-04-07 16:41:27 - agents.supervisor.agent - INFO - [supervisor] eval_research market=True company=True (retries m=0 c=0)
+2026-04-07 16:41:27 - agents.supervisor.agent - INFO - [supervisor] run_swot START
+2026-04-07 16:41:27 - shared.llm_client - INFO - LLM Client initialized with model: gpt-4o
+2026-04-07 16:41:27 - SWOTAnalysisAgent - INFO - LLM client auto-initialized for SWOTAnalysisAgent
+2026-04-07 16:41:27 - SWOTAnalysisAgent - INFO - =[SWOTAnalysisAgent]= Agent starting...
+2026-04-07 16:41:27 - SWOTAnalysisAgent - INFO -   → Think phase...
+2026-04-07 16:41:27 - SWOTAnalysisAgent - INFO - Thinking phase: preparing SWOT context...
+2026-04-07 16:41:27 - SWOTAnalysisAgent - INFO -   → Act phase...
+2026-04-07 16:41:33 - shared.llm_client - INFO - LLM response received (1391 chars)
+2026-04-07 16:41:35 - shared.llm_client - INFO - LLM response received (277 chars)
+2026-04-07 16:41:35 - SWOTAnalysisAgent - INFO - SWOT 평가 attempt=1 | TSR=0.917 | Fact=0.900 | Specificity=0.850 | Pass=True
+2026-04-07 16:41:35 - SWOTAnalysisAgent - INFO -   → Output phase...
+2026-04-07 16:41:35 - SWOTAnalysisAgent - INFO - Output phase: formatting SWOT analysis results...
+2026-04-07 16:41:35 - SWOTAnalysisAgent - INFO - =[SWOTAnalysisAgent]= Agent completed successfully ✓
+2026-04-07 16:41:35 - agents.supervisor.agent - INFO - [supervisor] run_swot DONE (len=1200)
+2026-04-07 16:41:35 - agents.supervisor.agent - INFO - [supervisor] eval_swot approved=True (retries=0)
+2026-04-07 16:41:35 - agents.supervisor.agent - INFO - [supervisor] run_report START
+2026-04-07 16:41:35 - shared.llm_client - INFO - LLM Client initialized with model: gpt-4o
+2026-04-07 16:41:35 - ReportWriterAgent - INFO - LLM client auto-initialized for ReportWriterAgent
+2026-04-07 16:41:35 - ReportWriterAgent - INFO - =[ReportWriterAgent]= Agent starting...
+2026-04-07 16:41:35 - ReportWriterAgent - INFO -   → Think phase...
+2026-04-07 16:41:35 - ReportWriterAgent - INFO - Thinking phase: preparing report components...
+2026-04-07 16:41:35 - ReportWriterAgent - INFO -   → Act phase...
+2026-04-07 16:41:35 - ReportWriterAgent - INFO - Acting phase: composing final report sections...
+2026-04-07 16:41:56 - shared.llm_client - INFO - LLM JSON response received
+2026-04-07 16:41:56 - ReportWriterAgent - INFO -   → Output phase...
+2026-04-07 16:41:56 - ReportWriterAgent - INFO - Output phase: converting report to markdown...
+2026-04-07 16:41:56 - ReportWriterAgent - INFO - =[ReportWriterAgent]= Agent completed successfully ✓
+2026-04-07 16:41:56 - agents.supervisor.agent - INFO - [supervisor] run_report DONE (len=5147)
+2026-04-07 16:41:56 - agents.supervisor.agent - INFO - [supervisor] eval_report approved=True (retries=0)
+2026-04-07 16:41:56 - agents.supervisor.agent - INFO - [SupervisorAgent] workflow DONE (report len=5147)
+2026-04-07 16:41:56 - agents.supervisor.agent - INFO - [SupervisorAgent] report saved → /Users/yubin/playground/battery_market_analysis/outputs/reports_md/battery_report_20260407_164156.md
+2026-04-07 16:41:56 - __main__ - INFO - Markdown report saved by supervisor (save=True)
+2026-04-07 16:41:56 - __main__ - INFO - PDF report saved -> /Users/yubin/playground/battery_market_analysis/outputs/reports_pdf/battery_report_20260407_164156.pdf
+2026-04-07 16:41:56 - __main__ - INFO - Pipeline completed successfully
+2026-04-07 16:45:48 - __main__ - INFO - ============================================================
+2026-04-07 16:45:48 - __main__ - INFO - Battery Analysis: Supervisor -> Markdown -> PDF
+2026-04-07 16:45:48 - __main__ - INFO - ============================================================
+2026-04-07 16:45:48 - retrieval.retriever - INFO - Initializing embedder with model: BAAI/bge-m3
+2026-04-07 16:45:48 - retrieval.embedder - INFO - Loading embedding model: BAAI/bge-m3
+2026-04-07 16:45:52 - retrieval.embedder - INFO - Model loaded successfully on device: cpu
+2026-04-07 16:45:52 - retrieval.retriever - INFO - Embedder initialized successfully
+2026-04-07 16:45:52 - retrieval.retriever - INFO - Chroma initialized at /Users/yubin/playground/battery_market_analysis/data/vector_store (collection=battery_documents, count=438)
+2026-04-07 16:45:52 - agents.supervisor.agent - INFO - [SupervisorAgent] workflow START
+2026-04-07 16:45:52 - agents.supervisor.agent - INFO - [supervisor] parallel_research START
+2026-04-07 16:45:52 - shared.llm_client - INFO - LLM Client initialized with model: gpt-4o
+2026-04-07 16:45:52 - shared.llm_client - INFO - LLM Client initialized with model: gpt-4o
+2026-04-07 16:45:52 - MarketResearchAgent - INFO - LLM client auto-initialized for MarketResearchAgent
+2026-04-07 16:45:52 - CompanyResearchAgent - INFO - LLM client auto-initialized for CompanyResearchAgent
+2026-04-07 16:45:52 - MarketResearchAgent - INFO - =[MarketResearchAgent]= Agent starting...
+2026-04-07 16:45:52 - CompanyResearchAgent - INFO - =[CompanyResearchAgent]= Agent starting...
+2026-04-07 16:45:52 - CompanyResearchAgent - INFO -   → Think phase...
+2026-04-07 16:45:52 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 현재 사업 포트폴리오 현황 제품 고객 지역 (top_k=5)
+2026-04-07 16:45:52 - MarketResearchAgent - INFO -   → Think phase...
+2026-04-07 16:45:52 - MarketResearchAgent - INFO - Thinking: Searching market documents...
+2026-04-07 16:45:52 - retrieval.retriever - INFO - Searching for: 글로벌 EV 시장 캐즘 보조금 감소 (top_k=3)
+2026-04-07 16:45:55 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:45:55 - retrieval.retriever - INFO - Found 3 vector search results
+2026-04-07 16:45:55 - retrieval.retriever - INFO - Searching for: 배터리 수요 구조 변화 가격 압력 (top_k=3)
+2026-04-07 16:45:56 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 시장 환경 변화 대응 전략 EV 캐즘 대응 (top_k=5)
+2026-04-07 16:45:56 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:45:56 - retrieval.retriever - INFO - Found 3 vector search results
+2026-04-07 16:45:56 - retrieval.retriever - INFO - Searching for: 배터리 관세 정책 규제 (top_k=3)
+2026-04-07 16:45:56 - retrieval.retriever - INFO - Found 3 vector search results
+2026-04-07 16:45:56 - retrieval.retriever - INFO - Searching for: 배터리 공급망 원자재 물류 (top_k=3)
+2026-04-07 16:45:56 - retrieval.retriever - INFO - Found 3 vector search results
+2026-04-07 16:45:56 - retrieval.retriever - INFO - Searching for: 차세대 배터리 기술 경쟁 (top_k=3)
+2026-04-07 16:45:56 - retrieval.retriever - INFO - Found 3 vector search results
+2026-04-07 16:45:56 - MarketResearchAgent - INFO -   → Act phase...
+2026-04-07 16:45:56 - MarketResearchAgent - INFO - Acting: Generating market analysis with evaluation cycle...
+2026-04-07 16:45:57 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 다각화 전략 방향 (top_k=5)
+2026-04-07 16:45:57 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:45:57 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 핵심 경쟁력 (top_k=5)
+2026-04-07 16:45:58 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:45:58 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 수익성 구조 및 전략 (top_k=5)
+2026-04-07 16:45:58 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:45:59 - retrieval.retriever - INFO - Searching for: LG에너지솔루션 주요 리스크 및 과제 (top_k=5)
+2026-04-07 16:45:59 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:46:00 - retrieval.retriever - INFO - Searching for: CATL 현재 사업 포트폴리오 현황 제품 고객 지역 (top_k=5)
+2026-04-07 16:46:00 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:46:00 - retrieval.retriever - INFO - Searching for: CATL 시장 환경 변화 대응 전략 EV 캐즘 대응 (top_k=5)
+2026-04-07 16:46:00 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:46:01 - retrieval.retriever - INFO - Searching for: CATL 다각화 전략 방향 (top_k=5)
+2026-04-07 16:46:01 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:46:02 - retrieval.retriever - INFO - Searching for: CATL 핵심 경쟁력 (top_k=5)
+2026-04-07 16:46:03 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:46:03 - shared.llm_client - INFO - LLM response received (1202 chars)
+2026-04-07 16:46:03 - MarketResearchAgent - INFO - Generated initial draft
+2026-04-07 16:46:04 - retrieval.retriever - INFO - Searching for: CATL 수익성 구조 및 전략 (top_k=5)
+2026-04-07 16:46:07 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:46:07 - retrieval.retriever - INFO - Searching for: CATL 주요 리스크 및 과제 (top_k=5)
+2026-04-07 16:46:08 - shared.llm_client - INFO - LLM response received (414 chars)
+2026-04-07 16:46:08 - MarketResearchAgent - INFO - Evaluation: 100/100 (Pass: True)
+2026-04-07 16:46:08 - MarketResearchAgent - INFO -   → Output phase...
+2026-04-07 16:46:08 - MarketResearchAgent - INFO - Output: Preparing final result with metadata...
+2026-04-07 16:46:08 - MarketResearchAgent - INFO - Output prepared: Score 100/100, Pass: True
+2026-04-07 16:46:08 - MarketResearchAgent - INFO - =[MarketResearchAgent]= Agent completed successfully ✓
+2026-04-07 16:46:08 - agents.supervisor.agent - INFO - [market_research] done (len=1202)
+2026-04-07 16:46:08 - retrieval.retriever - INFO - Found 5 vector search results
+2026-04-07 16:46:09 - CompanyResearchAgent - INFO -   → Act phase...
+2026-04-07 16:46:22 - shared.llm_client - INFO - LLM JSON response received
