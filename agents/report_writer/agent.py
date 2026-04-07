@@ -1,11 +1,15 @@
 """
 Report Writer Agent - compiles final report from all agent outputs
 """
-from typing import Dict, Any
+import json
+from typing import Dict, Any, List
 from datetime import datetime
 from agents.base import BaseAgent
 from agents.report_writer.schema import ReportOutput
-from agents.report_writer.prompts import REPORT_WRITER_SYSTEM_PROMPT, REPORT_COMPOSITION_PROMPT
+from agents.report_writer.prompts import REPORT_WRITER_SYSTEM_PROMPT, REPORT_COMPOSITION_PROMPT, REVISION_PROMPT
+from agents.report_writer.evaluator import ReportEvaluator
+
+MAX_EVAL_RETRIES = 2
 
 
 class ReportWriterAgent(BaseAgent):
@@ -29,31 +33,86 @@ class ReportWriterAgent(BaseAgent):
         """Use LLM to compose the final report sections as structured JSON"""
         self.logger.info("Acting phase: composing final report sections...")
 
-        # Fallback when LLM is not available
         if not self.llm:
             self.logger.warning("LLM not available, using placeholder report")
             return self._placeholder(thought)
 
-        user_prompt = REPORT_COMPOSITION_PROMPT.format(
+        evaluator = ReportEvaluator()
+        initial_prompt = REPORT_COMPOSITION_PROMPT.format(
             market_background=thought.get("market_background", "(없음)"),
             lg_strategy=thought.get("lg_strategy", "(없음)"),
             catl_strategy=thought.get("catl_strategy", "(없음)"),
             comparative_swot=thought.get("comparative_swot", "(없음)"),
         )
 
-        try:
-            result = self.call_llm(
-                system_prompt=REPORT_WRITER_SYSTEM_PROMPT,
-                user_prompt=user_prompt,
-                use_json_mode=True,
-                max_tokens=4000,
-            )
-            if isinstance(result, dict):
-                return result
-            return self._placeholder(thought)
-        except Exception as e:
-            self.logger.error(f"LLM call failed: {e}. Using placeholder.")
-            return self._placeholder(thought)
+        output_format_section = initial_prompt.split("=== 출력 형식 ===")[-1]
+        result: Dict[str, Any] = {}
+        eval_metadata: Dict[str, Any] = {}
+        current_failures: List[str] = []
+
+        for attempt in range(MAX_EVAL_RETRIES + 1):
+            self.logger.info(f"보고서 작성 시도 {attempt + 1}/{MAX_EVAL_RETRIES + 1}")
+
+            if attempt == 0:
+                prompt = initial_prompt
+            else:
+                prompt = REVISION_PROMPT.format(
+                    failures="\n".join(f"- {f}" for f in current_failures),
+                    report_json=json.dumps(result, ensure_ascii=False, separators=(",", ":"))[:3000],
+                    output_format=output_format_section,
+                )
+
+            try:
+                llm_result = self.call_llm(
+                    system_prompt=REPORT_WRITER_SYSTEM_PROMPT,
+                    user_prompt=prompt,
+                    use_json_mode=True,
+                    max_tokens=4000,
+                )
+            except Exception as e:
+                self.logger.error(f"LLM 호출 실패: {e}")
+                return self._placeholder(thought)
+
+            if not isinstance(llm_result, dict):
+                self.logger.warning("LLM이 dict를 반환하지 않음, 재시도")
+                current_failures = ["보고서가 JSON 형식으로 반환되지 않음"]
+                continue
+
+            result = llm_result
+
+            # ── Layer 1: 수치 Gate ──────────────────────────────────────
+            l1 = evaluator.evaluate_layer1(result)
+            eval_metadata["layer1"] = {"passed": l1.passed, "details": l1.details, "failures": l1.failures}
+            self.logger.info(l1.summary())
+
+            if not l1.passed:
+                current_failures = l1.failures
+                if attempt < MAX_EVAL_RETRIES:
+                    self.logger.info("Layer 1 미통과 → 재작성")
+                    continue
+                else:
+                    self.logger.warning("Layer 1 최대 재시도 초과 → 현재 결과로 진행")
+                    break
+
+            # ── Layer 2: 구조 체크리스트 ────────────────────────────────
+            l2 = evaluator.evaluate_layer2(result, self.llm)
+            eval_metadata["layer2"] = {"passed": l2.passed, "details": l2.details, "failures": l2.failures}
+            self.logger.info(l2.summary())
+
+            if not l2.passed:
+                current_failures = l2.failures
+                if attempt < MAX_EVAL_RETRIES:
+                    self.logger.info("Layer 2 미통과 → 재작성")
+                    continue
+                else:
+                    self.logger.warning("Layer 2 최대 재시도 초과 → 현재 결과로 진행")
+                    break
+
+            self.logger.info(f"평가 통과 (시도 {attempt + 1}회)")
+            break
+
+        result["_evaluation"] = eval_metadata
+        return result
 
     def _placeholder(self, thought: Dict[str, Any]) -> Dict[str, Any]:
         """LLM 미연결 또는 오류 시 반환하는 플레이스홀더"""
@@ -94,6 +153,8 @@ class ReportWriterAgent(BaseAgent):
         """Format and validate the output as structured JSON"""
         self.logger.info("Output phase: formatting final report as JSON...")
 
+        evaluation = action_result.pop("_evaluation", {})
+
         report_output = ReportOutput(
             summary=action_result.get("summary", {}),
             market_background=action_result.get("market_background", {}),
@@ -109,9 +170,17 @@ class ReportWriterAgent(BaseAgent):
             },
         )
 
+        l1_passed = evaluation.get("layer1", {}).get("passed", None)
+        l2_passed = evaluation.get("layer2", {}).get("passed", None)
+
         return {
             "result": report_output.dict(),
             "agent": "report_writer",
             "status": "completed",
             "format": "json",
+            "evaluation": {
+                "layer1_passed": l1_passed,
+                "layer2_passed": l2_passed,
+                "details": evaluation,
+            },
         }

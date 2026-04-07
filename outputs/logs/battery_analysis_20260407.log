@@ -566,3 +566,123 @@
 2026-04-07 14:41:04 - test_report_agent - INFO - =======================================================
 2026-04-07 14:41:04 - test_report_agent - INFO - 테스트 통과: 모든 필드가 정상 생성됨
 2026-04-07 14:41:04 - test_report_agent - INFO - =======================================================
+2026-04-07 15:02:00 - test_report_agent - INFO - =======================================================
+2026-04-07 15:02:00 - test_report_agent - INFO - ReportWriterAgent 단독 테스트 시작
+2026-04-07 15:02:00 - test_report_agent - INFO - =======================================================
+2026-04-07 15:02:00 - shared.llm_client - INFO - LLM Client initialized with model: gpt-4
+2026-04-07 15:02:00 - ReportWriterAgent - INFO - LLM client auto-initialized for ReportWriterAgent
+2026-04-07 15:02:00 - test_report_agent - INFO - LLM 연결 상태: 사용 가능
+2026-04-07 15:02:00 - ReportWriterAgent - INFO - =[ReportWriterAgent]= Agent starting...
+2026-04-07 15:02:00 - ReportWriterAgent - INFO -   → Think phase...
+2026-04-07 15:02:00 - ReportWriterAgent - INFO - Thinking phase: preparing report components...
+2026-04-07 15:02:00 - ReportWriterAgent - INFO -   → Act phase...
+2026-04-07 15:02:00 - ReportWriterAgent - INFO - Acting phase: composing final report sections...
+2026-04-07 15:02:00 - ReportWriterAgent - INFO - 보고서 작성 시도 1/3
+2026-04-07 15:02:01 - shared.llm_client - ERROR - LLM API call failed: Error code: 400 - {'error': {'message': "Invalid parameter: 'response_format' of type 'json_object' is not supported with this model.", 'type': 'invalid_request_error', 'param': 'response_format', 'code': None}}
+2026-04-07 15:02:01 - ReportWriterAgent - WARNING - ReportWriterAgent: JSON mode failed, falling back to text mode
+2026-04-07 15:03:51 - shared.llm_client - INFO - LLM response received (3900 chars)
+2026-04-07 15:03:51 - ReportWriterAgent - INFO - [Layer 1] 실패 - 4개 항목:
+  - REFERENCE 부족: 0건 (최소 10건 필요)
+  - 4장: 수치/통계 데이터 없음 (섹션당 최소 1개 필요)
+  - 5장: 수치/통계 데이터 없음 (섹션당 최소 1개 필요)
+  - Comparative SWOT 항목 부족: S/W/O/T 키워드 2/4개, 기업 언급 2/2개 (S/W/O/T × 2개사 = 최소 8항목 필요)
+2026-04-07 15:03:51 - ReportWriterAgent - INFO - Layer 1 미통과 → 재작성
+2026-04-07 15:03:51 - ReportWriterAgent - INFO - 보고서 작성 시도 2/3
+2026-04-07 15:03:51 - shared.llm_client - ERROR - LLM API call failed: Error code: 400 - {'error': {'message': "Invalid parameter: 'response_format' of type 'json_object' is not supported with this model.", 'type': 'invalid_request_error', 'param': 'response_format', 'code': None}}
+2026-04-07 15:03:51 - ReportWriterAgent - WARNING - ReportWriterAgent: JSON mode failed, falling back to text mode
+2026-04-07 15:05:06 - test_report_agent - INFO - =======================================================
+2026-04-07 15:05:06 - test_report_agent - INFO - ReportWriterAgent 단독 테스트 시작
+2026-04-07 15:05:06 - test_report_agent - INFO - =======================================================
+2026-04-07 15:05:06 - shared.llm_client - INFO - LLM Client initialized with model: gpt-4
+2026-04-07 15:05:06 - ReportWriterAgent - INFO - LLM client auto-initialized for ReportWriterAgent
+2026-04-07 15:05:06 - test_report_agent - INFO - LLM 연결 상태: 사용 가능
+2026-04-07 15:05:06 - ReportWriterAgent - INFO - =[ReportWriterAgent]= Agent starting...
+2026-04-07 15:05:06 - ReportWriterAgent - INFO -   → Think phase...
+2026-04-07 15:05:06 - ReportWriterAgent - INFO - Thinking phase: preparing report components...
+2026-04-07 15:05:06 - ReportWriterAgent - INFO -   → Act phase...
+2026-04-07 15:05:06 - ReportWriterAgent - INFO - Acting phase: composing final report sections...
+2026-04-07 15:05:06 - ReportWriterAgent - INFO - 보고서 작성 시도 1/3
+2026-04-07 15:05:07 - shared.llm_client - ERROR - LLM API call failed: Error code: 400 - {'error': {'message': "Invalid parameter: 'response_format' of type 'json_object' is not supported with this model.", 'type': 'invalid_request_error', 'param': 'response_format', 'code': None}}
+2026-04-07 15:05:07 - ReportWriterAgent - WARNING - ReportWriterAgent: JSON mode failed, falling back to text mode
+2026-04-07 15:06:05 - shared.llm_client - INFO - LLM response received (3144 chars)
+2026-04-07 15:06:05 - ReportWriterAgent - INFO - [Layer 1] 실패 - 3개 항목:
+  - REFERENCE 부족: 0건 (최소 10건 필요)
+  - 5장: 수치/통계 데이터 없음 (섹션당 최소 1개 필요)
+  - Comparative SWOT 항목 부족: S/W/O/T 키워드 3/4개, 기업 언급 2/2개 (S/W/O/T × 2개사 = 최소 8항목 필요)
+2026-04-07 15:06:05 - ReportWriterAgent - INFO - Layer 1 미통과 → 재작성
+2026-04-07 15:06:05 - ReportWriterAgent - INFO - 보고서 작성 시도 2/3
+2026-04-07 15:06:05 - shared.llm_client - ERROR - LLM API call failed: Error code: 400 - {'error': {'message': "Invalid parameter: 'response_format' of type 'json_object' is not supported with this model.", 'type': 'invalid_request_error', 'param': 'response_format', 'code': None}}
+2026-04-07 15:06:05 - ReportWriterAgent - WARNING - ReportWriterAgent: JSON mode failed, falling back to text mode
+2026-04-07 15:06:16 - shared.llm_client - INFO - LLM response received (4331 chars)
+2026-04-07 15:06:16 - ReportWriterAgent - INFO - [Layer 1] 실패 - 4개 항목:
+  - REFERENCE 부족: 2건 (최소 10건 필요)
+  - 4장: 수치/통계 데이터 없음 (섹션당 최소 1개 필요)
+  - 5장: 수치/통계 데이터 없음 (섹션당 최소 1개 필요)
+  - Comparative SWOT 항목 부족: S/W/O/T 키워드 3/4개, 기업 언급 2/2개 (S/W/O/T × 2개사 = 최소 8항목 필요)
+2026-04-07 15:06:16 - ReportWriterAgent - INFO - Layer 1 미통과 → 재작성
+2026-04-07 15:06:16 - ReportWriterAgent - INFO - 보고서 작성 시도 3/3
+2026-04-07 15:06:17 - shared.llm_client - ERROR - LLM API call failed: Error code: 400 - {'error': {'message': "Invalid parameter: 'response_format' of type 'json_object' is not supported with this model.", 'type': 'invalid_request_error', 'param': 'response_format', 'code': None}}
+2026-04-07 15:06:17 - ReportWriterAgent - WARNING - ReportWriterAgent: JSON mode failed, falling back to text mode
+2026-04-07 15:07:17 - shared.llm_client - INFO - LLM response received (3316 chars)
+2026-04-07 15:07:17 - ReportWriterAgent - INFO - [Layer 1] 실패 - 2개 항목:
+  - 5장: 수치/통계 데이터 없음 (섹션당 최소 1개 필요)
+  - Comparative SWOT 항목 부족: S/W/O/T 키워드 3/4개, 기업 언급 2/2개 (S/W/O/T × 2개사 = 최소 8항목 필요)
+2026-04-07 15:07:17 - ReportWriterAgent - INFO - Layer 1 미통과 → 재작성
+2026-04-07 15:07:17 - ReportWriterAgent - INFO - 보고서 작성 시도 3/3
+2026-04-07 15:07:17 - shared.llm_client - ERROR - LLM API call failed: Error code: 400 - {'error': {'message': "Invalid parameter: 'response_format' of type 'json_object' is not supported with this model.", 'type': 'invalid_request_error', 'param': 'response_format', 'code': None}}
+2026-04-07 15:07:17 - ReportWriterAgent - WARNING - ReportWriterAgent: JSON mode failed, falling back to text mode
+2026-04-07 15:08:34 - shared.llm_client - INFO - LLM response received (3254 chars)
+2026-04-07 15:08:34 - ReportWriterAgent - INFO - [Layer 1] 실패 - 3개 항목:
+  - REFERENCE 부족: 0건 (최소 10건 필요)
+  - 5장: 수치/통계 데이터 없음 (섹션당 최소 1개 필요)
+  - Comparative SWOT 항목 부족: S/W/O/T 키워드 3/4개, 기업 언급 2/2개 (S/W/O/T × 2개사 = 최소 8항목 필요)
+2026-04-07 15:08:34 - ReportWriterAgent - WARNING - Layer 1 최대 재시도 초과 → 현재 결과로 진행
+2026-04-07 15:08:34 - ReportWriterAgent - INFO -   → Output phase...
+2026-04-07 15:08:34 - ReportWriterAgent - INFO - Output phase: formatting final report as JSON...
+2026-04-07 15:08:34 - ReportWriterAgent - INFO - =[ReportWriterAgent]= Agent completed successfully ✓
+2026-04-07 15:08:34 - test_report_agent - INFO - 
+--- 에이전트 출력 (result) ---
+2026-04-07 15:08:34 - report.json_builder - INFO - Building JSON report from report output...
+2026-04-07 15:08:34 - report.json_builder - INFO - JSON report saved to outputs/reports_json/battery_strategy_report_20260407_150834.json
+2026-04-07 15:08:34 - test_report_agent - INFO - JSON 보고서 저장: outputs/reports_json/battery_strategy_report_20260407_150834.json
+2026-04-07 15:08:34 - report.markdown_builder - INFO - Markdown report saved to outputs/reports_md/battery_strategy_report_20260407_150834.md
+2026-04-07 15:08:34 - test_report_agent - INFO - Markdown 보고서 저장: outputs/reports_md/battery_strategy_report_20260407_150834.md
+2026-04-07 15:08:34 - test_report_agent - INFO - 
+--- 출력 필드 검증 ---
+2026-04-07 15:08:34 - test_report_agent - INFO -   [OK] summary.key_conclusions: 글로벌 배터리 시장은 2024년까지 연평균 20% 이상 성장할 것으로 예상되며, 중국이 압도적인 생산량을 차...
+2026-04-07 15:08:34 - test_report_agent - INFO -   [OK] summary.market_summary: 글로벌 배터리 시장은 전기차 수요 급증과 에너지저장장치(ESS) 보급 확대에 힘입어 2024년까지 약 1,2...
+2026-04-07 15:08:34 - test_report_agent - INFO -   [OK] market_background.market_size_trend: 글로벌 배터리 시장은 2024년까지 약 1,200억 달러 규모로 성장할 것으로 예상되며, 이는 전기차 수요 ...
+2026-04-07 15:08:34 - test_report_agent - INFO -   [OK] lges_analysis.portfolio: LG에너지솔루션은 파우치형 배터리 기술력을 바탕으로 북미·유럽 완성차 업체와의 합작법인(JV) 전략을 추진하...
+2026-04-07 15:08:34 - test_report_agent - INFO -   [OK] catl_analysis.portfolio: CATL은 LFP(리튬인산철) 배터리의 원가 경쟁력을 앞세워 글로벌 점유율 약 37%를 유지하고 있다....
+2026-04-07 15:08:34 - test_report_agent - INFO -   [OK] strategy_comparison.comparative_swot: LG에너지솔루션과 CATL 모두 강점을 활용하여 시장을 공략하고 있으나, 각각의 약점과 위협 요인을 관리하는...
+2026-04-07 15:08:34 - test_report_agent - INFO -   [OK] overall_implications: 향후 배터리 시장은 전기차와 ESS 수요 증가에 따른 성장이 예상되며, 이에 따라 LG에너지솔루션과 CATL...
+2026-04-07 15:08:34 - test_report_agent - INFO - =======================================================
+2026-04-07 15:08:34 - test_report_agent - INFO - 테스트 통과: 모든 필드가 정상 생성됨
+2026-04-07 15:08:34 - test_report_agent - INFO - =======================================================
+2026-04-07 15:08:39 - shared.llm_client - INFO - LLM response received (4528 chars)
+2026-04-07 15:08:39 - ReportWriterAgent - INFO - [Layer 1] 실패 - 2개 항목:
+  - 4장: 수치/통계 데이터 없음 (섹션당 최소 1개 필요)
+  - 5장: 수치/통계 데이터 없음 (섹션당 최소 1개 필요)
+2026-04-07 15:08:39 - ReportWriterAgent - WARNING - Layer 1 최대 재시도 초과 → 현재 결과로 진행
+2026-04-07 15:08:39 - ReportWriterAgent - INFO -   → Output phase...
+2026-04-07 15:08:39 - ReportWriterAgent - INFO - Output phase: formatting final report as JSON...
+2026-04-07 15:08:39 - ReportWriterAgent - INFO - =[ReportWriterAgent]= Agent completed successfully ✓
+2026-04-07 15:08:39 - test_report_agent - INFO - 
+--- 에이전트 출력 (result) ---
+2026-04-07 15:08:39 - report.json_builder - INFO - Building JSON report from report output...
+2026-04-07 15:08:39 - report.json_builder - INFO - JSON report saved to outputs/reports_json/battery_strategy_report_20260407_150839.json
+2026-04-07 15:08:39 - test_report_agent - INFO - JSON 보고서 저장: outputs/reports_json/battery_strategy_report_20260407_150839.json
+2026-04-07 15:08:39 - report.markdown_builder - INFO - Markdown report saved to outputs/reports_md/battery_strategy_report_20260407_150839.md
+2026-04-07 15:08:39 - test_report_agent - INFO - Markdown 보고서 저장: outputs/reports_md/battery_strategy_report_20260407_150839.md
+2026-04-07 15:08:39 - test_report_agent - INFO - 
+--- 출력 필드 검증 ---
+2026-04-07 15:08:39 - test_report_agent - INFO -   [OK] summary.key_conclusions: 글로벌 배터리 시장은 전기차 수요 급증과 에너지저장장치(ESS) 보급 확대에 따라 연평균 20% 이상 성장하...
+2026-04-07 15:08:39 - test_report_agent - INFO -   [OK] summary.market_summary: 글로벌 배터리 시장은 2024년 기준 약 1,200억 달러 규모로, 전기차 수요 급증과 에너지저장장치(ESS...
+2026-04-07 15:08:39 - test_report_agent - INFO -   [OK] market_background.market_size_trend: 글로벌 배터리 시장은 2024년까지 약 1,200억 달러(출처: Bloomberg New Energy Fin...
+2026-04-07 15:08:39 - test_report_agent - INFO -   [OK] lges_analysis.portfolio: LG에너지솔루션은 파우치형 배터리를 주력 제품으로 하며, GM, Stellantis 등 북미·유럽 완성차 업...
+2026-04-07 15:08:39 - test_report_agent - INFO -   [OK] catl_analysis.portfolio: CATL은 LFP 배터리를 주력 제품으로 하며, 대규모 생산 능력과 원가 경쟁력을 바탕으로 글로벌 점유율을 ...
+2026-04-07 15:08:39 - test_report_agent - INFO -   [OK] strategy_comparison.comparative_swot: 5.4 Comparative SWOT: LG에너지솔루션의 강점(S)은 고성능 파우치셀 기술과 글로벌 완성차 ...
+2026-04-07 15:08:39 - test_report_agent - INFO -   [OK] overall_implications: 6. 종합 시사점: 향후 배터리 시장은 전기차, ESS 등의 수요 증가와 신규 기술 개발이 주요 트렌드로 작...
+2026-04-07 15:08:39 - test_report_agent - INFO - =======================================================
+2026-04-07 15:08:39 - test_report_agent - INFO - 테스트 통과: 모든 필드가 정상 생성됨
+2026-04-07 15:08:39 - test_report_agent - INFO - =======================================================

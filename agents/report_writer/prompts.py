@@ -2,6 +2,18 @@
 Report Writer Agent - prompt templates
 """
 
+REVISION_PROMPT = """
+아래 보고서에서 다음 항목들이 기준을 충족하지 못했습니다. 해당 부분을 수정하여 보고서 전체를 다시 작성하시오.
+
+=== 수정 필요 항목 ===
+{failures}
+
+=== 현재 보고서 ===
+{report_json}
+
+=== 출력 형식 ==={output_format}
+"""
+
 REPORT_WRITER_SYSTEM_PROMPT = """
 당신은 배터리 산업 전문 전략 애널리스트입니다.
 
