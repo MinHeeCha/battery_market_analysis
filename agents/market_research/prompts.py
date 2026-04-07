@@ -22,10 +22,13 @@ MARKET_RESEARCH_SYSTEM_PROMPT = """
 MARKET_RESEARCH_USER_PROMPT_TEMPLATE = """
 다음 정보를 바탕으로 배터리 시장의 현황을 분석하시오:
 
-검색 결과:
+[요청 배경]
+{context}
+
+[검색 결과]
 {search_results}
 
-분석 항목:
+[분석 항목]
 1. 시장 규모 및 성장률
 2. 주요 시장 참여자
 3. 기술 트렌드
