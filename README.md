@@ -112,6 +112,9 @@ cp .env.example .env
 ```bash
 # 분석용 문서/데이터를 data/raw/에 배치
 # RAG 기능을 활용하려면 배터리 시장/기업 관련 문서 추가
+
+# PDF 임베딩 및 벡터DB 구축
+python scripts/ingest_documents.py --reset
 ```
 
 ### 3. 워크플로우 실행
