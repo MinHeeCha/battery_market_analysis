@@ -4,14 +4,18 @@ Market Research Agent - External Environment Analysis Engine
 역할: 글로벌 EV 시장 캐즘, 배터리 수요 구조 변화, 정책/관세, 공급망, 기술/경쟁 구도 분석
 LG에너지솔루션과 CATL의 공통 외부 환경 분석으로 SWOT 도출용 근거 제공
 
-Architecture: think()→검색 → act()→생성+평가+개선 → output()→메타데이터 포함
+Architecture: think()→검색(RAG+Web) → act()→생성+평가+개선 → output()→메타데이터 포함
 """
 
 import json
 import re
-from typing import Dict, Any, List, Optional
+import os
+import requests
+from typing import Dict, Any, List, Optional, Tuple
+from collections import defaultdict
 from agents.base import BaseAgent
 from pydantic import BaseModel, Field
+from config.settings import config
 from agents.market_research.prompts import (
     MARKET_RESEARCH_SYSTEM_PROMPT,
     MARKET_RESEARCH_USER_PROMPT_TEMPLATE,
@@ -44,7 +48,7 @@ class MarketResearchOutput(BaseModel):
 
 
 class MarketResearchAgent(BaseAgent):
-    """외부 환경 분석 에이전트"""
+    """외부 환경 분석 에이전트 (RAG + Web Search)"""
     
     EVALUATION_SCORE_THRESHOLD = 80
     MAX_REVISIONS = 2
@@ -52,10 +56,13 @@ class MarketResearchAgent(BaseAgent):
     def __init__(self, llm_client=None, retriever=None):
         super().__init__(name="MarketResearchAgent", llm_client=llm_client, retriever=retriever)
         self.revision_count = 0
+        self.vector_top_k = config.max_search_results
+        self.web_top_k = 5
+        self.tavily_api_key = os.getenv("TAVILY_API_KEY", "")
     
     def think(self, context: Dict[str, Any]) -> Dict[str, Any]:
-        """검색"""
-        self.logger.info("Thinking: Searching market documents...")
+        """검색 (Vector DB + Web 통합)"""
+        self.logger.info("Thinking: Searching market documents (RAG + Web)...")
         
         queries = [
             "글로벌 EV 시장 캐즘 보조금 감소",
@@ -65,17 +72,94 @@ class MarketResearchAgent(BaseAgent):
             "차세대 배터리 기술 경쟁"
         ]
         
-        search_results = {}
-        if self.retriever:
-            for query in queries:
-                results = self.retriever.search(query, top_k=3)
-                search_results[query] = results
+        all_combined_results = []
+        
+        for query in queries:
+            combined_results = []
+            
+            vector_results = self._search_vector(query)
+            combined_results.extend(vector_results)
+            self.logger.info("Vector search - {}: {} results".format(query, len(vector_results)))
+            
+            web_results = self._search_web(query)
+            combined_results.extend(web_results)
+            self.logger.info("Web search - {}: {} results".format(query, len(web_results)))
+            
+            deduped = self._dedupe_results(combined_results)
+            all_combined_results.extend(deduped)
+            self.logger.info("Combined - {}: {} unique results".format(query, len(deduped)))
+        
+        final_results = self._dedupe_results(all_combined_results)[:15]
+        self.logger.info("Final results: {} items from all searches".format(len(final_results)))
         
         return {
             "queries": queries,
-            "search_results": search_results,
+            "search_results": final_results,
             "context": context
         }
+    
+    def _search_vector(self, query: str) -> List[Dict[str, Any]]:
+        """Vector DB 검색"""
+        if not self.retriever:
+            return []
+        try:
+            results = self.retriever.search(query, top_k=self.vector_top_k)
+        except Exception as e:
+            self.logger.error("Vector search error: {}".format(e))
+            return []
+        
+        normalized = []
+        for item in results:
+            normalized.append({
+                "title": item.get("metadata", {}).get("file_name", item.get("source", "vector_result")),
+                "url": item.get("source", ""),
+                "content": item.get("content", ""),
+                "score": float(item.get("score", 0.0)),
+                "source_type": "vector_db"
+            })
+        return normalized
+    
+    def _search_web(self, query: str) -> List[Dict[str, Any]]:
+        """Web 검색 (Tavily API)"""
+        if not self.tavily_api_key:
+            return []
+        
+        payload = {
+            "api_key": self.tavily_api_key,
+            "query": query,
+            "search_depth": "basic",
+            "max_results": self.web_top_k,
+        }
+        
+        try:
+            response = requests.post("https://api.tavily.com/search", json=payload, timeout=20)
+            response.raise_for_status()
+            results = response.json().get("results", [])
+        except Exception as e:
+            self.logger.debug("Web search error: {}".format(e))
+            return []
+        
+        normalized = []
+        for item in results:
+            normalized.append({
+                "title": item.get("title", "web_result"),
+                "url": item.get("url", ""),
+                "content": item.get("content", ""),
+                "score": float(item.get("score", 0.0)),
+                "source_type": "web"
+            })
+        return normalized
+    
+    def _dedupe_results(self, results: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """결과 중복 제거 및 점수로 정렬"""
+        deduped = {}
+        for item in results:
+            key = (item.get("url", ""), item.get("title", ""))
+            if key not in deduped or item.get("score", 0.0) > deduped[key].get("score", 0.0):
+                deduped[key] = item
+        
+        ranked = sorted(deduped.values(), key=lambda x: x.get("score", 0.0), reverse=True)
+        return ranked
     
     def act(self, thought: Dict[str, Any]) -> Dict[str, Any]:
         """생성→평가→개선 사이클"""
@@ -348,23 +432,20 @@ class MarketResearchAgent(BaseAgent):
             self.logger.warning(f"Context formatting failed: {e}")
             return "(요청 배경 정보 포맷팅 실패)"
     
-    def _format_search_results(self, search_results: Dict[str, list]) -> str:
-        """검색 결과 포맷팅"""
+    def _format_search_results(self, search_results: List[Dict[str, Any]]) -> str:
+        """검색 결과 포맷팅 (Vector DB + Web)"""
         if not search_results:
             return "(검색 결과 없음)"
         
         formatted = []
-        for query, results in search_results.items():
-            formatted.append(f"🔍 [{query}]")
-            if results:
-                for i, result in enumerate(results, 1):
-                    content = result.get("content", "")[:300] if isinstance(result, dict) else str(result)[:300]
-                    score = result.get("score", 0) if isinstance(result, dict) else 0
-                    formatted.append(f"  {i}. {content} (관련도: {score:.2f})")
-            else:
-                formatted.append("  (결과 없음)")
+        for idx, item in enumerate(search_results[:5], start=1):
+            title = item.get("title", "No title")
+            content = item.get("content", "")[:300]
+            source_type = item.get("source_type", "unknown")
+            score = item.get("score", 0.0)
+            formatted.append("[{}] {}\\n   {} (점수: {:.2f})".format(source_type, title, content, score))
         
-        return "\n".join(formatted)
+        return "\\n\\n".join(formatted)
     
     def _get_placeholder_analysis(self) -> str:
         """Placeholder 분석"""

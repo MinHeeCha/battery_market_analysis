@@ -17,7 +17,7 @@ pandas==2.1.0
 
 # Vector Database
 chromadb==0.4.0
-# pinecone-client==3.0.0  # optional
+# pinecone-client==3.0.0  # optional
 
 # Document Processing
 pypdf==4.3.1
