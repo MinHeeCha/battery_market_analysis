@@ -72,7 +72,11 @@ class SupervisorAgent(BaseAgent):
             swot_agent = self.agents.get("swot_analysis")
             if swot_agent:
                 swot_result = swot_agent.run(self.state.to_dict())
-                self.state.comparative_swot = swot_result.get("result", "")
+                swot_payload = swot_result.get("result", "")
+                if isinstance(swot_payload, dict):
+                    self.state.comparative_swot = swot_payload.get("comparative_swot", "")
+                else:
+                    self.state.comparative_swot = swot_payload
                 workflow_results["swot_analysis"] = swot_result
                 self.logger.info("SWOT Analysis completed")
             
