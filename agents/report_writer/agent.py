@@ -2,10 +2,21 @@
 Report Writer Agent - compiles final report from all agent outputs
 """
 import re
+import json
 from typing import Any, Dict, List
 from datetime import datetime
 from agents.base import BaseAgent
-from agents.report_writer.prompts import REPORT_WRITER_SYSTEM_PROMPT, REPORT_COMPOSITION_PROMPT
+from agents.report_writer.prompts import (
+    REPORT_WRITER_SYSTEM_PROMPT,
+    MARKET_BACKGROUND_PROMPT,
+    LGES_ANALYSIS_PROMPT,
+    CATL_ANALYSIS_PROMPT,
+    STRATEGY_COMPARISON_PROMPT,
+    SUMMARY_PROMPT,
+)
+from agents.report_writer.evaluator import ReportEvaluator
+
+MAX_EVAL_RETRIES = 2
 
 
 class ReportWriterAgent(BaseAgent):
@@ -26,38 +37,97 @@ class ReportWriterAgent(BaseAgent):
         }
 
     def act(self, thought: Dict[str, Any]) -> Dict[str, Any]:
-        """Use LLM to compose the final report sections as structured JSON"""
+        """섹션별 독립 LLM 호출로 보고서를 작성한다 (5회 호출)"""
         self.logger.info("Acting phase: composing final report sections...")
 
-        # Fallback when LLM is not available
         if not self.llm:
             self.logger.warning("LLM not available, using placeholder report")
             return self._placeholder(thought)
 
-        user_prompt = REPORT_COMPOSITION_PROMPT.format(
-            market_background=thought.get("market_background", "(없음)"),
-            lg_strategy=thought.get("lg_strategy", "(없음)"),
-            catl_strategy=thought.get("catl_strategy", "(없음)"),
-            comparative_swot=thought.get("comparative_swot", "(없음)"),
+        def _call(prompt: str, label: str) -> Dict[str, Any]:
+            try:
+                res = self.call_llm(
+                    system_prompt=REPORT_WRITER_SYSTEM_PROMPT,
+                    user_prompt=prompt,
+                    use_json_mode=True,
+                    max_tokens=2000,
+                )
+                if isinstance(res, dict):
+                    return res
+                self.logger.warning(f"{label}: dict 아님, 빈 dict 반환")
+                return {}
+            except Exception as e:
+                self.logger.error(f"{label} LLM 호출 실패: {e}")
+                return {}
+
+        # ── Call 1~4: 섹션별 생성 ──────────────────────────────────────
+        self.logger.info("섹션 생성 1/5: 시장 배경")
+        market_background = _call(
+            MARKET_BACKGROUND_PROMPT.format(market_research=thought.get("market_background", "(없음)")),
+            "시장 배경",
         )
 
-        try:
-            result = self.call_llm(
-                system_prompt=REPORT_WRITER_SYSTEM_PROMPT,
-                user_prompt=user_prompt,
-                use_json_mode=True,
-                max_tokens=4000,
-            )
-            if isinstance(result, dict):
-                result["references"] = self._collect_sources(
-                    thought.get("lg_strategy", ""),
-                    thought.get("catl_strategy", ""),
-                )
-                return result
-            return self._placeholder(thought)
-        except Exception as e:
-            self.logger.error(f"LLM call failed: {e}. Using placeholder.")
-            return self._placeholder(thought)
+        self.logger.info("섹션 생성 2/5: LG에너지솔루션 분석")
+        lges_analysis = _call(
+            LGES_ANALYSIS_PROMPT.format(lg_strategy=thought.get("lg_strategy", "(없음)")),
+            "LGES 분석",
+        )
+
+        self.logger.info("섹션 생성 3/5: CATL 분석")
+        catl_analysis = _call(
+            CATL_ANALYSIS_PROMPT.format(catl_strategy=thought.get("catl_strategy", "(없음)")),
+            "CATL 분석",
+        )
+
+        self.logger.info("섹션 생성 4/5: 전략 비교")
+        strategy_comparison = _call(
+            STRATEGY_COMPARISON_PROMPT.format(
+                lges_summary=json.dumps(lges_analysis, ensure_ascii=False)[:1500],
+                catl_summary=json.dumps(catl_analysis, ensure_ascii=False)[:1500],
+                comparative_swot=thought.get("comparative_swot", "(없음)"),
+            ),
+            "전략 비교",
+        )
+
+        # ── Call 5: SUMMARY + 종합 시사점 ─────────────────────────────
+        self.logger.info("섹션 생성 5/5: SUMMARY + 종합 시사점")
+        summary_result = _call(
+            SUMMARY_PROMPT.format(
+                market_background=json.dumps(market_background, ensure_ascii=False)[:800],
+                lges_analysis=json.dumps(lges_analysis, ensure_ascii=False)[:800],
+                catl_analysis=json.dumps(catl_analysis, ensure_ascii=False)[:800],
+                strategy_comparison=json.dumps(strategy_comparison, ensure_ascii=False)[:800],
+            ),
+            "SUMMARY",
+        )
+
+        result: Dict[str, Any] = {
+            "summary": summary_result.get("summary", {}),
+            "market_background": market_background,
+            "lges_analysis": lges_analysis,
+            "catl_analysis": catl_analysis,
+            "strategy_comparison": strategy_comparison,
+            "overall_implications": summary_result.get("overall_implications", ""),
+            "references": self._collect_sources(
+                thought.get("lg_strategy", ""),
+                thought.get("catl_strategy", ""),
+            ),
+        }
+
+        # ── 평가 ──────────────────────────────────────────────────────
+        evaluator = ReportEvaluator()
+        eval_metadata: Dict[str, Any] = {}
+
+        l1 = evaluator.evaluate_layer1(result)
+        eval_metadata["layer1"] = {"passed": l1.passed, "details": l1.details, "failures": l1.failures}
+        self.logger.info(l1.summary())
+
+        l2 = evaluator.evaluate_layer2(result, self.llm)
+        eval_metadata["layer2"] = {"passed": l2.passed, "details": l2.details, "failures": l2.failures}
+        self.logger.info(l2.summary())
+
+        result["_evaluation"] = eval_metadata
+        return result
 
     def _placeholder(self, thought: Dict[str, Any]) -> Dict[str, Any]:
         """LLM 미연결 또는 오류 시 반환하는 플레이스홀더"""
@@ -98,28 +168,16 @@ class ReportWriterAgent(BaseAgent):
         """각 기업조사 마크다운의 ## Sources 섹션에서 인용 항목을 추출한다."""
         seen: dict = {}
         for md in markdowns:
-            # ## Sources 이후 섹션만 추출
             match = re.search(r"## Sources\n([\s\S]*?)(?=\n## |\Z)", md)
             if not match:
                 continue
             for line in match.group(1).splitlines():
-                # 4-space 들여쓰기로 시작하는 실제 인용 라인만 수집
                 stripped = line.strip()
                 if stripped.startswith("- ") and line.startswith("    "):
                     citation = stripped[2:].strip()
                     if citation and citation not in seen:
                         seen[citation] = True
         return list(seen.keys())
-
-    def output(self, action_result: Dict[str, Any]) -> Dict[str, Any]:
-        """Format final report as a markdown string for the supervisor."""
-        self.logger.info("Output phase: converting report to markdown...")
-        markdown = self._to_markdown(action_result)
-        return {
-            "result": markdown,
-            "agent": "report_writer",
-            "status": "completed",
-        }
 
     def _to_markdown(self, d: Dict[str, Any]) -> str:
         """Convert the structured report dict to a markdown document."""
@@ -222,3 +280,25 @@ class ReportWriterAgent(BaseAgent):
                 lines.append(f"- {ref}")
 
         return "\n".join(lines).strip()
+
+    def output(self, action_result: Dict[str, Any]) -> Dict[str, Any]:
+        """Convert report dict to markdown and return for supervisor"""
+        self.logger.info("Output phase: converting report to markdown...")
+
+        evaluation = action_result.pop("_evaluation", {})
+        markdown = self._to_markdown(action_result)
+
+        l1_passed = evaluation.get("layer1", {}).get("passed", None)
+        l2_passed = evaluation.get("layer2", {}).get("passed", None)
+
+        return {
+            "result": markdown,
+            "agent": "report_writer",
+            "status": "completed",
+            "format": "json",
+            "evaluation": {
+                "layer1_passed": l1_passed,
+                "layer2_passed": l2_passed,
+                "details": evaluation,
+            },
+        }
