@@ -2,4 +2,7 @@
 Company Research Agent module
 """
 
-__all__ = ["CompanyResearchAgent", "CompanyResearchOutput", "CompanyProfile"]
+from .agent import CompanyResearchAgent
+from .schema import CompanyResearchOutput
+
+__all__ = ["CompanyResearchAgent", "CompanyResearchOutput"]

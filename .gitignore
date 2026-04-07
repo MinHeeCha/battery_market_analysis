@@ -6,3 +6,13 @@ __pycache__/
 .DS_Store
 .env
 outputs/
+raw/
+*.env
+.env
+*.log
+
+# Vector DB artifacts (keep only placeholder files)
+tests/data/vector_store/**
+!tests/data/vector_store/.gitkeep
+
+

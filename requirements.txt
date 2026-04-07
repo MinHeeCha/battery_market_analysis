@@ -6,9 +6,10 @@ pydantic==1.10.13
 langchain==0.1.0
 langchain-openai==0.0.5
 openai==1.10.0
+httpx==0.27.2
 
 # Embedding Model
-sentence-transformers==2.2.2
+sentence-transformers==3.0.1
 
 # Data & Search
 numpy==1.24.4
@@ -19,6 +20,7 @@ chromadb==0.4.0
 # pinecone-client==3.0.0  # optional
 
 # Document Processing
+pypdf==4.3.1
 pypandoc==1.11
 reportlab==4.0.0
 
